@@ -17,15 +17,13 @@ data = data.rename(columns={'Junction': 'Type'})
 
 # Aggiunte colonne per orario, giorno, mese e weekend
 data.insert(1, column = "Is_weekend", value = 0)
-data.insert(1, column = "Month", value = 0) 
-data.insert(1, column = "Day", value = 0) 
+data.insert(1, column = "Month", value = 0)
 data.insert(1, column = "Hour", value = 0) 
 
 for idx, row in data.iterrows():
   time = datetime.strptime(row['DateTime'], '%Y-%m-%d %H:%M:%S')
 
   data.loc[idx,'Hour'] = time.hour
-  data.loc[idx,'Day'] = time.day
   data.loc[idx,'Month'] = time.month
   data.loc[idx,'Is_weekend'] = time.weekday() >= 5
 
