@@ -5,7 +5,7 @@ import seaborn as sns
 
 X_train, X_test, y_train, y_test = initialize_ML()
 
-model = DecisionTreeRegressor(max_depth=15,min_samples_split=3,min_samples_leaf=6,max_features=5)
+model = DecisionTreeRegressor(max_depth=16,min_samples_leaf=6,max_features=4)
 
 model.fit(X_train, y_train)
 scores = model.score(X_test,y_test)

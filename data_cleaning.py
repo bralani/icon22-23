@@ -35,6 +35,12 @@ for idx, row in data.iterrows():
 # Rimozione della colonna DateTime
 data.drop(['DateTime'], axis=1, inplace=True)
 
+# Rimuove i record relativi agli anni 2016 e 2017
+data = data[data.Year == 2017]
+
+# Rimuove la colonna year ormai inutile
+data.drop(['Year'], axis=1, inplace=True)
+
 print(data.head())
 
 data = data.to_csv("dataset/trafficoutput_edit.csv")

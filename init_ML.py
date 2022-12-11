@@ -5,7 +5,7 @@ from sklearn.preprocessing import MinMaxScaler
 def initialize_ML():
     set = pd.read_csv("dataset/trafficoutput_edit.csv")
 
-    X = set[['Year', 'Month', 'Day', 'Hour', 'Type']]
+    X = set[['Month', 'Day', 'Hour', 'Type']]
     y = set[['Traffic']]
 
     scaler = MinMaxScaler()
