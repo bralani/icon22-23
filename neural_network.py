@@ -1,21 +1,10 @@
-import pandas as pd
 from sklearn.neural_network import MLPRegressor
-from sklearn.model_selection import train_test_split
 from sklearn.ensemble import RandomForestRegressor
 import matplotlib.pyplot as plt
-from sklearn.preprocessing import MinMaxScaler
+from init_ML import initialize_ML
 
-set = pd.read_csv("dataset/trafficoutput_edit.csv")
+X_train, X_test, y_train, y_test = initialize_ML()
 
-X = set[['Year', 'Month', 'Day', 'Hour', 'Type']]
-y = set[['Traffic']]
-
-scaler = MinMaxScaler()
-X = scaler.fit_transform(X)
-y = scaler.fit_transform(y)
-
-X_train, X_test, y_train, y_test = train_test_split(
-X, y, test_size=0.25, random_state=42)
 
 clf = MLPRegressor(solver='adam', activation='logistic', learning_rate='adaptive', hidden_layer_sizes=(50, 50), tol=1e-10, verbose=True, max_iter=2000)
 
