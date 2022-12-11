@@ -4,9 +4,9 @@ from datetime import datetime
 data = pd.read_csv("dataset/trafficoutput.csv")
 
 # Min-max scaler sulla feature target (rinominata da Vehicles a Traffic)
-min_params = data[['Vehicles']].min()
-max_params = data[['Vehicles']].max()
-data[['Vehicles']] = (data[['Vehicles']] - min_params) / (max_params - min_params)
+#min_params = data[['Vehicles']].min()
+#max_params = data[['Vehicles']].max()
+#data[['Vehicles']] = (data[['Vehicles']] - min_params) / (max_params - min_params)
 data = data.rename(columns={'Vehicles': 'Traffic'})
 
 # Rinomina delle feature Junction in Type: 
