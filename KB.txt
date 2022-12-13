@@ -1,0 +1,47 @@
+- Tripla per rappresentare l'individuo: [Individuo,Proprietà,Valore]
+    Esempio: Semaforo, Colore, Rosso
+
+- Per fare la classe si usa la Proprietà subClassOf
+
+    Esempio integrazione classe con individuo:
+    strada_principale: [London Way,velocita_massima,60]
+    strada_principale: [California Street,num_corsie,3]
+    strada_principale: [Compton,subClassOf,Strada]
+
+
+
+Classe Semaforo:
+
+    Proprietà: colore {Rosso,Giallo,Verde}
+                is_in {oggetto di tipo strada}
+                timer_verde {valore}
+                timer_rosso {valore}
+                timer_giallo {valore}
+
+
+
+
+
+(Super-Classe) Strada:
+
+    Proprietà: nome {Stringa}
+                tipologia {primary (associamo sia la primary che anche la trunk),secondary,tertiary,(le altre le analizziamo ma la mettiamo come terziarie)}
+                velocita_massima {valore}
+                num_corsie {1,2,3}
+
+
+(Sotto-classe) strada_principale:
+        velocita_massima {60}
+        num_corsie {3}
+
+(Sotto-classe) strada_secondaria:
+        velocita_massima {50}
+        num_corsie {2}
+
+(Sotto-classe) strada_terziaria:
+        velocita_massima {30}
+        num_corsie {1}
+
+
+Incrocio
+        
