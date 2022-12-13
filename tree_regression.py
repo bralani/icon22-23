@@ -11,6 +11,8 @@ model.fit(X_train, y_train)
 scores = model.score(X_test,y_test)
 print(scores)
 
+print(model.predict([[27,12,1,1]]))
+
 '''
 ax = sns.scatterplot(x=X_train, y=y_train,
                      color="black", alpha=0.5)
