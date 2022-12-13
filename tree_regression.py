@@ -3,7 +3,7 @@ from sklearn.tree import DecisionTreeRegressor
 import matplotlib.pyplot as plt
 import seaborn as sns
 
-X_train, X_test, y_train, y_test = initialize_ML()
+X_train, X_test, y_train, y_test, scaler = initialize_ML()
 
 model = DecisionTreeRegressor(max_depth=16,min_samples_leaf=6,max_features=4)
 
@@ -11,7 +11,10 @@ model.fit(X_train, y_train)
 scores = model.score(X_test,y_test)
 print(scores)
 
-print(model.predict([[27,12,1,1]]))
+
+example = [[1,10,3,1]]
+example2 = scaler.transform(example)
+print(model.predict(example2))
 
 '''
 ax = sns.scatterplot(x=X_train, y=y_train,
