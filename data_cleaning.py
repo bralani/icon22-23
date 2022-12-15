@@ -1,5 +1,5 @@
 import pandas as pd
-from datetime import datetime
+from datetime import datetime,date
 
 data = pd.read_csv("dataset/trafficoutput.csv")
 
@@ -17,9 +17,10 @@ data = data.rename(columns={'Junction': 'Type'})
 
 # Aggiunte colonne per orario, giorno, mese e weekend
 data.insert(1, column = "Year", value = 0)
-data.insert(1, column = "Month", value = 0)
 data.insert(1, column = "Hour", value = 0) 
-data.insert(1, column = "Day", value = 0) 
+data.insert(1, column = "Month", value = 0)
+data.insert(1, column = "Day", value = 0)
+data.insert(5, column = "Weekend", value = 0)
 
 for idx, row in data.iterrows():
   time = datetime.strptime(row['DateTime'], '%Y-%m-%d %H:%M:%S')
@@ -29,17 +30,25 @@ for idx, row in data.iterrows():
   data.loc[idx,'Month'] = time.month
   data.loc[idx,'Day'] = time.day
 
+  dt = date(time.year, time.month, time.day)
+  no = dt.weekday()
+  if no > 4:
+    data.loc[idx,'Weekend'] = 1
+     
+
   if(data.loc[idx,'Type'] > 2):
     data.loc[idx,'Type'] = data.loc[idx,'Type'] - 1
+
 
 # Rimozione della colonna DateTime
 data.drop(['DateTime'], axis=1, inplace=True)
 
 # Rimuove i record relativi agli anni 2015 e 2016
-data = data[data.Year == 2017]
+data = data[data.Year == 2016]
 
 # Rimuove la colonna year ormai inutile
 data.drop(['Year'], axis=1, inplace=True)
+
 
 print(data.head())
 

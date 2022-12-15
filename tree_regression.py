@@ -12,7 +12,7 @@ scores = model.score(X_test,y_test)
 print(scores)
 
 
-example = [[1,10,3,1]]
+example = [[2,1,10,1,1]]
 example2 = scaler.transform(example)
 print(model.predict(example2))
 

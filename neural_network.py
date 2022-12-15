@@ -3,7 +3,7 @@ from sklearn.ensemble import RandomForestRegressor
 import matplotlib.pyplot as plt
 from init_ML import initialize_ML
 
-X_train, X_test, y_train, y_test = initialize_ML()
+X_train, X_test, y_train, y_test, scaler = initialize_ML()
 
 
 clf = MLPRegressor(solver='adam', activation='logistic', learning_rate='adaptive', hidden_layer_sizes=(50, 50), tol=1e-10, verbose=True, max_iter=2000)
