@@ -11,9 +11,3 @@ clf = MLPRegressor(solver='adam', activation='logistic', learning_rate='adaptive
 clf.fit(X_train, y_train)
 scores = clf.score(X_test,y_test)
 print(scores)
-
-
-regr = RandomForestRegressor(n_estimators=500, min_samples_split=5, min_samples_leaf=10, random_state=0)
-regr.fit(X_train, y_train.ravel())
-
-print(regr.score(X_test,y_test.ravel()))
