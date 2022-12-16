@@ -30,7 +30,7 @@ Classe Semaforo:
                 num_corsie {1,2,3}
 
 
-(Sotto-classe) strada_principale:
+(Sotto-classe) strada_primaria:
         velocita_massima {60}
         num_corsie {3}
 
