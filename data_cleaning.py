@@ -13,6 +13,7 @@ data = data.rename(columns={'Vehicles': 'Traffic'})
 # 1 = Molto trafficata
 # 2 = Mediamente trafficata
 # 3 = Poco trafficata
+# 4 = Poco trafficata
 data = data.rename(columns={'Junction': 'Type'})
 
 # Aggiunte colonne per orario, giorno, mese e weekend
@@ -34,10 +35,6 @@ for idx, row in data.iterrows():
   no = dt.weekday()
   if no > 4:
     data.loc[idx,'Weekend'] = 1
-     
-
-  if(data.loc[idx,'Type'] > 2):
-    data.loc[idx,'Type'] = data.loc[idx,'Type'] - 1
 
 
 # Rimozione della colonna DateTime

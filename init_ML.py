@@ -10,7 +10,7 @@ def initialize_ML():
 
     scaler = MinMaxScaler()
   
-    y = scaler.fit_transform(y)
+    #y = scaler.fit_transform(y)
     X = scaler.fit_transform(X)
     
     '''

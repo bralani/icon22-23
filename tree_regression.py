@@ -9,14 +9,25 @@ import seaborn as sns
 X, y, scaler = initialize_ML()
 
 model = DecisionTreeRegressor(max_depth=16,min_samples_leaf=6,max_features=4)
-
+model.fit(X, y)
 '''
 example = [[2,1,10,1,1]]
 example2 = scaler.transform(example)
 print(model.predict(example2))
 '''
-cv2 = ShuffleSplit(n_splits=5, test_size=0.3, random_state=0)
-print(1 + mean(cross_val_score(model, X, y, cv=cv2, scoring='neg_mean_absolute_error')))
+cv2 = ShuffleSplit(n_splits=10, random_state=0)
+print("R2: " + str(mean(cross_val_score(model, X, y, cv=cv2, scoring='r2'))))
+print("ABS: " + str(-mean(cross_val_score(model, X, y, cv=cv2, scoring='neg_mean_absolute_error'))))
+print("squared: " + str(-mean(cross_val_score(model, X, y, cv=cv2, scoring='neg_mean_squared_error'))))
+print("max error: " +str(-mean(cross_val_score(model, X, y, cv=cv2, scoring='max_error'))))
+
+errors = []
+for i in range(len(y)):
+  y_true = y['Traffic'][i]
+  y_pred = model.predict([X[i]])[0]
+  errors.append(abs(y_true - y_pred))
+plt.plot(errors)
+plt.show()
 
 '''
 ax = sns.scatterplot(x=X_train, y=y_train,
