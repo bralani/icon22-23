@@ -22,7 +22,6 @@ prop(strada_terziaria, subClassOf, strada).
 /* Classe nodo
  *
  * Contiene i seguenti attributi:
- * - id: Identificativo del nodo
  * - latitudine: indica la latitudine del nodo
  * - longitudine: indica la longitudine del nodo
  */

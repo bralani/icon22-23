@@ -10,12 +10,12 @@
  * @param X: strada
  * @param L: lunghezza della strada (viene restituito il risultato)
  */
-lunghezza_strada(X, [Y,Z|[]], L) :- prop(X, type, strada), Lunghezza is somma_nodi(Y, Z, Lunghezza), L is Lunghezza.
-lunghezza_strada(X, [testa|coda], L) :- prop(X, type, strada), lunghezza is testa + lunghezza_strada(X, coda, L), L is lunghezza.
+lunghezza_strada(X, [Y,Z|[]], L) :- prop(X, type, strada), somma_nodi(Y, Z, L).
+%lunghezza_strada(X, [testa|coda], L) :- prop(X, type, strada), lunghezza is testa + lunghezza_strada(X, coda, L), L is lunghezza.
 
 somma_nodi(X, Y, S) :- prop(X, latitudine, L1), prop(Y, latitudine, L2), 
                        prop(X, longitudine, G1), prop(Y, longitudine, G2), 
-                       S is L1 - L2 + G1 - G2.
+                       S is abs(L1 - L2 + G1 - G2).
 
 
 % Esempio
