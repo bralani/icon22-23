@@ -1,4 +1,5 @@
 from numpy import mean
+import numpy as np
 from sklearn.model_selection import ShuffleSplit, cross_val_score
 from sklearn.neighbors import KNeighborsRegressor
 import matplotlib.pyplot as plt
@@ -14,10 +15,8 @@ print("ABS: " + str(-mean(cross_val_score(clf, X, y, cv=cv2, scoring='neg_mean_a
 print("squared: " + str(-mean(cross_val_score(clf, X, y, cv=cv2, scoring='neg_mean_squared_error'))))
 print("max error: " +str(-mean(cross_val_score(clf, X, y, cv=cv2, scoring='max_error'))))
 
-errors = []
-for i in range(len(y)):
-  y_true = y['Traffic'][i]
-  y_pred = clf.predict([X[i]])[0]
-  errors.append(abs(y_true - y_pred))
-plt.plot(errors)
-plt.show()
+log_likelihood = clf.score(X, y)
+k = clf.n_neighbors
+n = len(X)
+bic_score = -2 * log_likelihood + k * np.log(n)
+print("BIC: " + bic_score)

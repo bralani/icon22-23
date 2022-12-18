@@ -11,9 +11,8 @@ data = data.rename(columns={'Vehicles': 'Traffic'})
 
 # Rinomina delle feature Junction in Type: 
 # 1 = Molto trafficata
-# 2 = Mediamente trafficata
-# 3 = Poco trafficata
-# 4 = Poco trafficata
+# 2 = Poco trafficata
+# 3 = Mediamente trafficata
 data = data.rename(columns={'Junction': 'Type'})
 
 # Aggiunte colonne per orario, giorno, mese e weekend
