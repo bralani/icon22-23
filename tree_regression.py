@@ -1,3 +1,4 @@
+from math import log
 import numpy as np
 import pandas as pd
 from sklearn import metrics
@@ -20,16 +21,17 @@ print(model.predict(example2))
 cv2 = ShuffleSplit(n_splits=10, random_state=0)
 print("R2: " + str(mean(cross_val_score(model, X, y, cv=cv2, scoring='r2'))))
 print("ABS: " + str(-mean(cross_val_score(model, X, y, cv=cv2, scoring='neg_mean_absolute_error'))))
-print("squared: " + str(-mean(cross_val_score(model, X, y, cv=cv2, scoring='neg_mean_squared_error'))))
+
+mse = -mean(cross_val_score(model, X, y, cv=cv2, scoring='neg_mean_squared_error'))
+print("squared: " + str(mse))
 print("max error: " +str(-mean(cross_val_score(model, X, y, cv=cv2, scoring='max_error'))))
 
-
-score = model.score(X, y)
-log_prob = model.tree_.compute_log_prob(X)
-log_likelihood = score + log_prob
+def calculate_bic(n, log_likelihood, num_params):
+	bic = n * log_likelihood + num_params * log(n)
+	return bic
 
 # profondità dell'albero
 k = model.max_depth
 n = len(X)
-bic_score = -2 * log_likelihood + k * np.log(n)
-print("BIC: " + bic_score)
+log_likelihood = log(mse)
+print("BIC: " + str(calculate_bic(n, log_likelihood, k)))
