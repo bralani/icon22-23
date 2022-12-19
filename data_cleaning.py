@@ -1,5 +1,7 @@
+import numpy as np
 import pandas as pd
 from datetime import datetime,date
+import calendar
 
 data = pd.read_csv("dataset/trafficoutput.csv")
 
@@ -35,12 +37,26 @@ for idx, row in data.iterrows():
   if no > 4:
     data.loc[idx,'Weekend'] = 1
 
+# Rimuove i record relativi agli anni 2015 e 2017
+data = data[data.Year == 2016]
+
+year = 2016
+for type in range(1, 4):
+  for month in range(1, 13):
+    num_days = calendar.monthrange(year, month)[1]
+    for i in range(1, num_days+1):
+      time = datetime.strptime(str(year) + "-" + str(month) + "-" + str(i), '%Y-%m-%d').date()
+
+      max_params = data[np.logical_and(data.Year == year, np.logical_and(data.Month == month, np.logical_and(data.Day == i, data.Type == type)))]['Traffic'].max()
+      min_params = data[np.logical_and(data.Year == year, np.logical_and(data.Month == month, np.logical_and(data.Day == i, data.Type == type)))]['Traffic'].min()
+
+      for line in data.index:
+        if data['Year'][line] == year and data['Month'][line] == month and data['Day'][line] == i and data['Type'][line] == type:
+          value = data['Traffic'][line]
+          data['Traffic'][line] = (value - min_params) / (max_params - min_params)
 
 # Rimozione della colonna DateTime
 data.drop(['DateTime'], axis=1, inplace=True)
-
-# Rimuove i record relativi agli anni 2015 e 2016
-data = data[data.Year == 2016]
 
 # Rimuove la colonna year ormai inutile
 data.drop(['Year'], axis=1, inplace=True)
