@@ -26,7 +26,7 @@ Classe Semaforo:
 
     Proprietà: nome {Stringa}
                 tipologia {primary (associamo sia la primary che anche la trunk),secondary,tertiary,(le altre le analizziamo ma la mettiamo come terziarie)}
-                velocita_massima {valore}
+                velocita_massima {valore} {50,2,3}
                 num_corsie {1,2,3}
 
 

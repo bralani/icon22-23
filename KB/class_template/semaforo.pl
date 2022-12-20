@@ -7,3 +7,5 @@
  * - timer_giallo: indica il tempo di permanenza del semaforo in giallo
  * - timer_rosso: indica il tempo di permanenza del semaforo in rosso
  */
+
+ 
