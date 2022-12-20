@@ -22,6 +22,7 @@ data.insert(1, column = "Year", value = 0)
 data.insert(1, column = "Hour", value = 0) 
 data.insert(1, column = "Month", value = 0)
 data.insert(1, column = "Day", value = 0)
+data.insert(5, column = "Week", value = 0)
 data.insert(5, column = "Weekend", value = 0)
 
 for idx, row in data.iterrows():
@@ -30,6 +31,7 @@ for idx, row in data.iterrows():
   data.loc[idx,'Year'] = time.year
   data.loc[idx,'Hour'] = time.hour
   data.loc[idx,'Month'] = time.month
+  data.loc[idx,'Week'] = time.isocalendar()[1]
   data.loc[idx,'Day'] = time.day
 
   dt = date(time.year, time.month, time.day)
@@ -41,19 +43,19 @@ for idx, row in data.iterrows():
 data = data[data.Year == 2016]
 
 year = 2016
+n_weeks = 53
+
+data['Traffic'] = data['Traffic'].astype(float)
+
 for type in range(1, 4):
-  for month in range(1, 13):
-    num_days = calendar.monthrange(year, month)[1]
-    for i in range(1, num_days+1):
-      time = datetime.strptime(str(year) + "-" + str(month) + "-" + str(i), '%Y-%m-%d').date()
+  for week in range(1, n_weeks+1):
+    max_params = data[np.logical_and(data.Week == week, data.Type == type)]['Traffic'].max()
+    min_params = data[np.logical_and(data.Week == week, data.Type == type)]['Traffic'].min()
 
-      max_params = data[np.logical_and(data.Year == year, np.logical_and(data.Month == month, np.logical_and(data.Day == i, data.Type == type)))]['Traffic'].max()
-      min_params = data[np.logical_and(data.Year == year, np.logical_and(data.Month == month, np.logical_and(data.Day == i, data.Type == type)))]['Traffic'].min()
-
-      for line in data.index:
-        if data['Year'][line] == year and data['Month'][line] == month and data['Day'][line] == i and data['Type'][line] == type:
-          value = data['Traffic'][line]
-          data['Traffic'][line] = (value - min_params) / (max_params - min_params)
+    for line in data.index:
+      if data['Week'][line] == week and data['Type'][line] == type:
+        value = (data['Traffic'][line] - min_params) / (max_params - min_params)
+        data['Traffic'][line] = value
 
 # Rimozione della colonna DateTime
 data.drop(['DateTime'], axis=1, inplace=True)
@@ -61,7 +63,7 @@ data.drop(['DateTime'], axis=1, inplace=True)
 # Rimuove la colonna year ormai inutile
 data.drop(['Year'], axis=1, inplace=True)
 
-
+print(data.dtypes)
 print(data.head())
 
 data = data.to_csv("dataset/trafficoutput_edit.csv")

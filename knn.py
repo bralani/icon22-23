@@ -1,6 +1,7 @@
 from math import log
 from numpy import mean
 import numpy as np
+import pandas as pd
 from sklearn.model_selection import ShuffleSplit, cross_val_score
 from sklearn.neighbors import KNeighborsRegressor
 import matplotlib.pyplot as plt
@@ -28,3 +29,41 @@ k = clf.n_neighbors
 n = len(X)
 log_likelihood = log(mse)
 print("BIC: " + str(calculate_bic(n, log_likelihood, k)))
+
+'''
+data = pd.read_csv("dataset/trafficoutput_edit.csv")
+
+def average_time(day, month, hour, type):
+    index2 = 0
+    result = 0
+    #average del 2015
+    for line in data.index:
+        if data["Type"][line] == type and data["Day"][line] == day and data["Month"][line] == month and data["Hour"][line] == hour:
+            result += data["Traffic"][line]
+            index2 = index2 + 1
+
+    return result/index2
+
+#populate axis
+type = 1
+day = 4
+month = 1 
+x_axis = []
+y_axis = []
+y_pred = []
+for i in range(0,24):
+	x_axis.append(f"0{i}")
+	y_axis.append(average_time(day,month,i,type))
+	ex = [[day,month,i,0,type]]
+	ex = scaler.transform(ex)
+	y_pred.append(clf.predict(ex)[0])
+
+
+#plotting
+plt.plot(x_axis, y_axis, label = "True")
+plt.plot(x_axis, y_pred, label = "Pred")
+plt.title('Traffico orario')
+plt.xlabel('Orario')
+plt.ylabel('Media passaggio veicoli')
+plt.show()
+'''
