@@ -33,12 +33,12 @@ print("BIC: " + str(calculate_bic(n, log_likelihood, k)))
 
 data = pd.read_csv("dataset/trafficoutput_edit.csv")
 
-def average_time(day, month, hour, type):
+def average_time(month, hour, type):
     index2 = 0
     result = 0
     #average del 2015
     for line in data.index:
-        if data["Type"][line] == type and data["Day"][line] == day and data["Month"][line] == month and data["Hour"][line] == hour:
+        if data["Type"][line] == type and data["Month"][line] == month and data["Hour"][line] == hour and data["Weekend"][line] == 0:
             result += data["Traffic"][line]
             index2 = index2 + 1
 
@@ -53,8 +53,8 @@ y_axis = []
 y_pred = []
 for i in range(0,24):
 	x_axis.append(f"0{i}")
-	y_axis.append(average_time(day,month,i,type))
-	ex = [[day,month,i,0,1,type]]
+	y_axis.append(average_time(month,i,type))
+	ex = [[day,month,i,0,type]]
 	ex = scaler.transform(ex)
 	y_pred.append(clf.predict(ex)[0])
 

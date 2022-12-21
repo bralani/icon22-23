@@ -6,9 +6,9 @@ def initialize_ML():
     set = pd.read_csv("dataset/trafficoutput_edit.csv")
 
     # Record relativi al type 1
-    #set = set[set.Type == 1]
+    #set = set[set.Type == 3]
 
-    X = set[['Day', 'Month', 'Hour', 'Weekend', 'Week', 'Type']]
+    X = set[['Day', 'Month', 'Hour', 'Weekend', 'Type']]
     y = set[['Traffic']]
 
     scaler = MinMaxScaler()

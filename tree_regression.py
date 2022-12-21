@@ -11,7 +11,7 @@ import seaborn as sns
 
 X, y, scaler = initialize_ML()
 
-model = DecisionTreeRegressor(max_depth=15,min_samples_leaf=6,max_features=4)
+model = DecisionTreeRegressor(max_depth=15,min_samples_leaf=10)
 model.fit(X, y)
 '''
 example = [[2,1,10,1,1]]
