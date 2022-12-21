@@ -53,8 +53,14 @@ for type in range(1, 4):
     min_params = data[np.logical_and(data.Week == week, data.Type == type)]['Traffic'].min()
 
     for line in data.index:
-      if data['Week'][line] == week and data['Type'][line] == type:
-        value = (data['Traffic'][line] - min_params) / (max_params - min_params)
+      if (data['Week'][line] == week and data['Type'][line] == type) and (type == 1):
+        value = ((data['Traffic'][line] - min_params) / (max_params - min_params))
+        data['Traffic'][line] = value
+      elif (data['Week'][line] == week and data['Type'][line] == type) and (type == 2):
+        value = ((data['Traffic'][line] - min_params) / (max_params - min_params)) * 0.60
+        data['Traffic'][line] = value
+      elif (data['Week'][line] == week and data['Type'][line] == type) and (type == 3):
+        value = ((data['Traffic'][line] - min_params) / (max_params - min_params)) * 0.70  
         data['Traffic'][line] = value
 
 # Rimozione della colonna DateTime

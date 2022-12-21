@@ -30,7 +30,7 @@ n = len(X)
 log_likelihood = log(mse)
 print("BIC: " + str(calculate_bic(n, log_likelihood, k)))
 
-'''
+
 data = pd.read_csv("dataset/trafficoutput_edit.csv")
 
 def average_time(day, month, hour, type):
@@ -47,14 +47,14 @@ def average_time(day, month, hour, type):
 #populate axis
 type = 1
 day = 4
-month = 1 
+month = 6 
 x_axis = []
 y_axis = []
 y_pred = []
 for i in range(0,24):
 	x_axis.append(f"0{i}")
 	y_axis.append(average_time(day,month,i,type))
-	ex = [[day,month,i,0,type]]
+	ex = [[day,month,i,0,1,type]]
 	ex = scaler.transform(ex)
 	y_pred.append(clf.predict(ex)[0])
 
@@ -66,4 +66,5 @@ plt.title('Traffico orario')
 plt.xlabel('Orario')
 plt.ylabel('Media passaggio veicoli')
 plt.show()
-'''
+
+
