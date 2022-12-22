@@ -1,3 +1,4 @@
+from datetime import datetime
 from math import log
 import numpy as np
 import pandas as pd
@@ -35,3 +36,11 @@ k = model.max_depth
 n = len(X)
 log_likelihood = log(mse)
 print("BIC: " + str(calculate_bic(n, log_likelihood, k)))
+
+
+
+now = datetime.now()
+for i in range(0, 1000000):
+    model.predict([[0, 0, 0, 1, 1]])
+
+print(datetime.now() - now)

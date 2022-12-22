@@ -1,3 +1,4 @@
+from datetime import datetime
 from math import log
 from numpy import mean
 import numpy as np
@@ -43,7 +44,7 @@ def average_time(month, hour, type):
             index2 = index2 + 1
 
     return result/index2
-
+'''
 #populate axis
 type = 1
 day = 4
@@ -58,7 +59,6 @@ for i in range(0,24):
 	ex = scaler.transform(ex)
 	y_pred.append(clf.predict(ex)[0])
 
-
 #plotting
 plt.plot(x_axis, y_axis, label = "True")
 plt.plot(x_axis, y_pred, label = "Pred")
@@ -68,3 +68,10 @@ plt.ylabel('Media passaggio veicoli')
 plt.show()
 
 
+'''
+
+now = datetime.now()
+for i in range(0, 1000000):
+    clf.predict([[0, 0, 0, 1, 1]])
+
+print(datetime.now() - now)
