@@ -1,7 +1,7 @@
 % Importazione delle classi
-:- include('class/strada.pl').
-:- include('class/semaforo.pl').
-:- include('class/incrocio.pl').
+:- include('class_value/strada.pl').
+:- include('class_value/semaforo.pl').
+:- include('class_value/incrocio.pl').
 
 
 % Definizione relazione di tipo e sottoclasse
