@@ -21,6 +21,9 @@ somma_nodi(X, Y, S) :- prop(X, latitudine, L1), prop(Y, latitudine, L2),
                        prop(X, longitudine, G1), prop(Y, longitudine, G2), 
                        S is abs(L1 - L2 + G1 - G2).
 
+nodi_strada(X, N) :- prop(X, type, strada), prop(X, nodi, N).
+
+
 % Esempio
 prop(via_giordano_bruno, type, strada_primaria).
 prop(via_giordano_bruno, nodi, [nodo_1, nodo_2, nodo_3, nodo_4]).
