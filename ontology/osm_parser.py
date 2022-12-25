@@ -1,10 +1,15 @@
 import xml.etree.cElementTree as ET
+from tkinter import Tk
+from tkinter.filedialog import askopenfilename
 
 
 #LETTURA DATI DA FILE
 #----------------------------------------------
 
-tree = ET.parse('ontology/map/map_data.xml')
+Tk().withdraw() 
+filename = askopenfilename()
+
+tree = ET.parse(filename)
 root = tree.getroot()
 allnodes=root.findall('node')
 lista_semafori = []

@@ -1,7 +1,6 @@
 import numpy as np
 import pandas as pd
-from datetime import datetime,date
-import calendar
+from datetime import datetime, date
 
 data = pd.read_csv("dataset/trafficoutput.csv")
 

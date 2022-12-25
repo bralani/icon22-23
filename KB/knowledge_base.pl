@@ -24,6 +24,23 @@ somma_nodi(X, Y, S) :- prop(X, latitudine, L1), prop(Y, latitudine, L2),
 nodi_strada(X, N) :- prop(X, type, strada), prop(X, nodi, N).
 lat_lon(X, L, G) :- prop(X, latitudine, L), prop(X, longitudine, G).
 
+/**
+ * Aggiorna i valori del nuovo ciclo di un semaforo.
+ *
+ * @param S: semaforo
+ * @param V: timer verde
+ * @param R: timer rosso
+ * @param G: timer giallo
+ */
+aggiorna_ciclo_semaforo(S, V, R, G) :- prop(S, subClassOf, semaforo), 
+                                       retract(prop(S, timer_verde, Z)),
+                                       retract(prop(S, timer_rosso, Y)),
+                                       retract(prop(S, timer_giallo, U)),
+                                       assertz(prop(S, timer_verde, V)),
+                                       assertz(prop(S, timer_rosso, R)),
+                                       assertz(prop(S, timer_giallo, G)).
+
+
 
 % Esempio
 prop(via_giordano_bruno, type, strada_primaria).

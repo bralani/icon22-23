@@ -1,7 +1,7 @@
 from pyswip import Prolog
 
 prolog = Prolog()
-prolog.consult("KB/knowledge_base.pl")
+prolog.consult("KB/knowledge_base.pl",catcherrors=False)
 
 def lista_strade():
     '''
@@ -47,7 +47,7 @@ def lista_nodi(strada):
     return nodi
     
     
-    
+print(lista_nodi('via_giordano_bruno'))
         
 
 

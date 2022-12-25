@@ -38,9 +38,10 @@ log_likelihood = log(mse)
 print("BIC: " + str(calculate_bic(n, log_likelihood, k)))
 
 
-
+'''
 now = datetime.now()
 for i in range(0, 1000000):
     model.predict([[0, 0, 0, 1, 1]])
 
 print(datetime.now() - now)
+'''

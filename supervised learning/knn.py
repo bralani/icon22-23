@@ -1,11 +1,9 @@
 from datetime import datetime
 from math import log
 from numpy import mean
-import numpy as np
 import pandas as pd
 from sklearn.model_selection import ShuffleSplit, cross_val_score
 from sklearn.neighbors import KNeighborsRegressor
-import matplotlib.pyplot as plt
 from init_ML import initialize_ML
 
 X, y, scaler = initialize_ML()
@@ -68,10 +66,11 @@ plt.ylabel('Media passaggio veicoli')
 plt.show()
 
 
-'''
 
 now = datetime.now()
 for i in range(0, 1000000):
     clf.predict([[0, 0, 0, 1, 1]])
 
 print(datetime.now() - now)
+
+'''
