@@ -144,7 +144,7 @@ for item in lista_dati_nodi_strada:
     lon = item["lon"]
     
     contents.append( "\n")
-    contents.append( "prop("+nodo_id+",subClassOf,nodo).\n")
+    contents.append( "prop("+nodo_id+",type,nodo).\n")
     contents.append( "prop("+nodo_id+",id,"+nodo_id+").\n")
     contents.append( "prop("+nodo_id+",latitudine,"+lat+").\n")
     contents.append( "prop("+nodo_id+",longitudine,"+lon+").\n")
