@@ -177,7 +177,7 @@ for item in lista_semafori:
     semaforo += "\n"
     semaforo += "prop("+nodo_id+",subClassOf,semaforo).\n"
     semaforo += "prop("+nodo_id+",is_in,"+strada+").\n"
-    semaforo += "prop("+nodo_id+",colore,).\n"
+    semaforo += "prop("+nodo_id+",colore,Rosso).\n"
     semaforo += "prop("+nodo_id+",timer_verde,0).\n"
     semaforo += "prop("+nodo_id+",timer_giallo,0).\n"
     semaforo += "prop("+nodo_id+",timer_rosso,0).\n"
