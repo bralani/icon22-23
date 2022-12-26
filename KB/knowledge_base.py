@@ -27,6 +27,7 @@ def lista_nodi_strada(strada):
     Dati di input
     --------------
       strada: strada di cui si vogliono conoscere i nodi 
+      
     Dati di output
     -------------- 
       nodi: lista contenente tutti i nodi della strada passata in input, 
