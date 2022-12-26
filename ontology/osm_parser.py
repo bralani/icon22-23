@@ -7,6 +7,13 @@ from tkinter.filedialog import askopenfilename
 #----------------------------------------------
 
 def carica_file(locale=0):
+    '''
+    Metodo carica_file
+    -------------------
+    Dati di output
+    -------------- 
+      Genera i file delle clausole prolog per la nostra KB
+    '''
 
     if locale == 1:
         Tk().withdraw() 
@@ -180,7 +187,7 @@ def carica_file(locale=0):
         strada = item["strada"]
 
         semaforo += "\n"
-        semaforo += "prop("+nodo_id+",subClassOf,semaforo).\n"
+        semaforo += "prop("+nodo_id+",type,semaforo).\n"
         semaforo += "prop("+nodo_id+",is_in,"+strada+").\n"
         semaforo += "prop("+nodo_id+",colore,Rosso).\n"
         semaforo += "prop("+nodo_id+",timer_verde,0).\n"
@@ -232,7 +239,7 @@ def carica_file(locale=0):
     strade_incroci = '[{}]'.format(','.join(strade_incroci))
 
     incrocio += "\n"
-    incrocio += "prop("+nodi_in_comune+",subClassOf,incrocio).\n"
+    incrocio += "prop("+nodi_in_comune+",type,incrocio).\n"
     incrocio += "prop("+nodi_in_comune+",strade,"+strade_incroci+").\n"
     incrocio += "prop("+nodi_in_comune+",semafori,"+semafori_comuni+").\n"
     incrocio += "prop("+nodi_in_comune+",lat,"+latitudine_nodo_comune+").\n"

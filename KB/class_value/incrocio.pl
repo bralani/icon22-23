@@ -7,7 +7,7 @@
  * - latitudine: indica la latitudine dell'incrocio
  * - longitudine: indica la longitudine dell'incrocio
  */
-prop(nodo_9825042959,subClassOf,incrocio).
+prop(nodo_9825042959,type,incrocio).
 prop(nodo_9825042959,strade,[25621696,25654897,49810913,50308667,50308672,70845599,325737263,418001523,827830279,1037179264]).
 prop(nodo_9825042959,semafori,[]).
 prop(nodo_9825042959,lat,41.1040834).
