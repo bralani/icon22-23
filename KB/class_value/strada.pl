@@ -19,73 +19,73 @@ prop(strada_secondaria, subClassOf, strada).
 prop(strada_terziaria, subClassOf, strada).
 
 
-prop(via_della_resistenza,subClassOf,strada_terziaria).
+prop(via_della_resistenza,type,strada_terziaria).
 prop(via_della_resistenza,nome,via_della_resistenza).
 prop(via_della_resistenza,num_corsie,1).
 prop(via_della_resistenza,velocita_massima,30).
 prop(via_della_resistenza,nodi,[nodo_280886219,nodo_2623145440,nodo_279659199,nodo_2625108918,nodo_1262239253,nodo_1262239259,nodo_280886250,nodo_2625109529,nodo_280886331,nodo_279658647]).
 
-prop(via_stefano_jacini,subClassOf,strada_terziaria).
+prop(via_stefano_jacini,type,strada_terziaria).
 prop(via_stefano_jacini,nome,via_stefano_jacini).
 prop(via_stefano_jacini,num_corsie,2).
 prop(via_stefano_jacini,velocita_massima,80).
 prop(via_stefano_jacini,nodi,[nodo_279658648,nodo_445844212,nodo_2625110090,nodo_2625110106,nodo_2625110122,nodo_1784570446,nodo_279658647]).
 
-prop(via_stefano_jacini,subClassOf,strada_terziaria).
+prop(via_stefano_jacini,type,strada_terziaria).
 prop(via_stefano_jacini,nome,via_stefano_jacini).
 prop(via_stefano_jacini,num_corsie,2).
 prop(via_stefano_jacini,velocita_massima,80).
 prop(via_stefano_jacini,nodi,[nodo_279658647,nodo_3528202563,nodo_3226724694,nodo_280886267,nodo_279391909,nodo_280886318,nodo_1262217975,nodo_3528202565,nodo_279385128]).
 
-prop(via_stefano_jacini,subClassOf,strada_terziaria).
+prop(via_stefano_jacini,type,strada_terziaria).
 prop(via_stefano_jacini,nome,via_stefano_jacini).
 prop(via_stefano_jacini,num_corsie,2).
 prop(via_stefano_jacini,velocita_massima,30).
 prop(via_stefano_jacini,nodi,[nodo_639283167,nodo_9519144339,nodo_3528202559,nodo_3876305899,nodo_639283168,nodo_9519144381,nodo_9519144383,nodo_639283169,nodo_639282926,nodo_7401318235,nodo_639283170,nodo_7401318234,nodo_639283171,nodo_3401918053,nodo_639282880,nodo_3528202567,nodo_3528202585,nodo_3528202574,nodo_9651142685,nodo_1779226504,nodo_1107827724,nodo_4177432905,nodo_639177783,nodo_2625110105,nodo_2625110108,nodo_1262239256,nodo_2625110152,nodo_639177777,nodo_3528202571,nodo_9825042950,nodo_9825042949,nodo_639177778,nodo_9651142687,nodo_1784570434,nodo_9825042953,nodo_9825042955,nodo_9825042952,nodo_9825042951,nodo_9025536648,nodo_639283167]).
 
-prop(via_stefano_jacini,subClassOf,strada_terziaria).
+prop(via_stefano_jacini,type,strada_terziaria).
 prop(via_stefano_jacini,nome,via_stefano_jacini).
 prop(via_stefano_jacini,num_corsie,2).
 prop(via_stefano_jacini,velocita_massima,30).
 prop(via_stefano_jacini,nodi,[nodo_639177808,nodo_2625108896,nodo_2625108916,nodo_2623145752,nodo_2625109525,nodo_3528202693,nodo_9554612839,nodo_639177811,nodo_2625110109,nodo_2625110091,nodo_2625110070,nodo_844669965,nodo_3528202589,nodo_3528202592,nodo_3528202553,nodo_639177809,nodo_2625108816,nodo_2625108799,nodo_2625108800,nodo_2625108822,nodo_2625108875,nodo_639177808]).
 
-prop(via_stefano_jacini,subClassOf,strada_terziaria).
+prop(via_stefano_jacini,type,strada_terziaria).
 prop(via_stefano_jacini,nome,via_stefano_jacini).
 prop(via_stefano_jacini,num_corsie,2).
 prop(via_stefano_jacini,velocita_massima,30).
 prop(via_stefano_jacini,nodi,[nodo_639177811,nodo_1784570446,nodo_639177777]).
 
-prop(via_della_resistenza,subClassOf,strada_terziaria).
+prop(via_della_resistenza,type,strada_terziaria).
 prop(via_della_resistenza,nome,via_della_resistenza).
 prop(via_della_resistenza,num_corsie,2).
 prop(via_della_resistenza,velocita_massima,30).
 prop(via_della_resistenza,nodi,[nodo_279658647,nodo_9825042959,nodo_549920969,nodo_279392367,nodo_824361674,nodo_639282887,nodo_639282888,nodo_4184607986,nodo_279392187,nodo_4695416628,nodo_4184610468,nodo_279380861]).
 
-prop(via_della_resistenza,subClassOf,strada_terziaria).
+prop(via_della_resistenza,type,strada_terziaria).
 prop(via_della_resistenza,nome,via_della_resistenza).
 prop(via_della_resistenza,num_corsie,2).
 prop(via_della_resistenza,velocita_massima,30).
 prop(via_della_resistenza,nodi,[nodo_3419888064,nodo_3419888058,nodo_3419888071,nodo_3419888072,nodo_3419888064]).
 
-prop(parco_2_giugno,subClassOf,strada_terziaria).
+prop(parco_2_giugno,type,strada_terziaria).
 prop(parco_2_giugno,nome,parco_2_giugno).
 prop(parco_2_giugno,num_corsie,2).
 prop(parco_2_giugno,velocita_massima,30).
 prop(parco_2_giugno,nodi,[nodo_3472026739,nodo_4177430946,nodo_3472026673,nodo_279399954,nodo_2625108821,nodo_2625108820,nodo_849595512,nodo_3472026762,nodo_639177825,nodo_3472026657,nodo_279399955,nodo_3472026719,nodo_3472026721,nodo_3472026612,nodo_4177430953,nodo_639177806,nodo_279399956,nodo_639177851,nodo_3472026730,nodo_6058329296,nodo_639177800,nodo_6058329295,nodo_3472026739]).
 
-prop(parco_2_giugno,subClassOf,strada_terziaria).
+prop(parco_2_giugno,type,strada_terziaria).
 prop(parco_2_giugno,nome,parco_2_giugno).
 prop(parco_2_giugno,num_corsie,2).
 prop(parco_2_giugno,velocita_massima,30).
 prop(parco_2_giugno,nodi,[nodo_4184602318,nodo_4184602184,nodo_4184601986,nodo_4184602108,nodo_4184601960,nodo_4184601935,nodo_4184600288,nodo_4184600438,nodo_4184600364,nodo_4184599745,nodo_4184599896,nodo_4184600113,nodo_4184600325,nodo_4184600420,nodo_4184600448,nodo_4184601028,nodo_4184600915,nodo_4184600475,nodo_4184599539,nodo_4184599399,nodo_4184599275,nodo_4184599142,nodo_4184599176,nodo_4184599618,nodo_4184600562,nodo_4184602297,nodo_4184602319,nodo_4184602298,nodo_4184602318]).
 
-prop(parco_2_giugno,subClassOf,strada_terziaria).
+prop(parco_2_giugno,type,strada_terziaria).
 prop(parco_2_giugno,nome,parco_2_giugno).
 prop(parco_2_giugno,num_corsie,2).
 prop(parco_2_giugno,velocita_massima,30).
 prop(parco_2_giugno,nodi,[nodo_4184599176,nodo_4184600876,nodo_4184606698,nodo_7728297529,nodo_9247864123,nodo_7728297528,nodo_4184602387,nodo_4184599176]).
 
-prop(parco_2_giugno,subClassOf,strada_terziaria).
+prop(parco_2_giugno,type,strada_terziaria).
 prop(parco_2_giugno,nome,parco_2_giugno).
 prop(parco_2_giugno,num_corsie,2).
 prop(parco_2_giugno,velocita_massima,30).

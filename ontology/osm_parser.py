@@ -10,9 +10,17 @@ def carica_file(locale=0):
     '''
     Metodo carica_file
     -------------------
+    Dati di input
+    --------------
+
+      locale: lindica se il file xml da analizzare deve essree quello preimpostato o caricato dalla macchina locale
+
+    -------------- 
     Dati di output
     -------------- 
+
       Genera i file delle clausole prolog per la nostra KB
+
     '''
 
     if locale == 1:
@@ -137,7 +145,7 @@ def carica_file(locale=0):
             if speed == "":
                 speed = "30"
         elementi_lista = '[{}]'.format(','.join(item["nodi"]))
-        strada += "prop("+name+",subClassOf,"+highway+").\n"
+        strada += "prop("+name+",type,"+highway+").\n"
         strada += "prop("+name+",nome,"+name+").\n"
         strada += "prop("+name+",num_corsie,"+lanes+").\n"
         strada += "prop("+name+",velocita_massima,"+speed+").\n"
@@ -185,17 +193,18 @@ def carica_file(locale=0):
         lat = item["lat"]
         lon = item["lon"]
         strada = item["strada"]
+        strada = strada.lower()
 
         semaforo += "\n"
         semaforo += "prop("+nodo_id+",type,semaforo).\n"
         semaforo += "prop("+nodo_id+",is_in,"+strada+").\n"
-        semaforo += "prop("+nodo_id+",colore,Rosso).\n"
+        semaforo += "prop("+nodo_id+",colore,rosso).\n"
         semaforo += "prop("+nodo_id+",timer_verde,0).\n"
         semaforo += "prop("+nodo_id+",timer_giallo,0).\n"
         semaforo += "prop("+nodo_id+",timer_rosso,0).\n"
         semaforo += "\n"
 
-    semaforo = semaforo.replace(" ", "")
+    semaforo = semaforo.replace(" ", "_")
     contents.insert(10, semaforo)
 
     f.close()

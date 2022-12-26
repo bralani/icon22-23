@@ -22,20 +22,21 @@ def lista_strade():
 
 def lista_nodi_strada(strada):
     '''
-    Metodo lista_strade
+    Metodo lista_nodi_strada
     -------------------
     Dati di input
     --------------
-      strada: strada di cui si vogliono conoscere i nodi 
+    strada: strada di cui si vogliono conoscere i nodi 
       
     Dati di output
     -------------- 
-      nodi: lista contenente tutti i nodi della strada passata in input, 
-            con relativa latutidine e longitudine
+        nodi: lista contenente tutti i nodi della strada passata in input, 
+        con relativa latutidine e longitudine
     '''
 
     strada = strada.replace(" ", "_")
     strada = strada.replace("-", "_")
+    strada = strada.lower()
     nodi = []
     atom_nodi = []
     for atom in prolog.query("nodi_strada("+strada+",N)"):

@@ -10,40 +10,40 @@
 
 
 prop(nodo_279380861,type,semaforo).
-prop(nodo_279380861,is_in,ViadellaResistenza).
-prop(nodo_279380861,colore,Rosso).
+prop(nodo_279380861,is_in,via_della_resistenza).
+prop(nodo_279380861,colore,rosso).
 prop(nodo_279380861,timer_verde,0).
 prop(nodo_279380861,timer_giallo,0).
 prop(nodo_279380861,timer_rosso,0).
 
 
 prop(nodo_279658647,type,semaforo).
-prop(nodo_279658647,is_in,ViadellaResistenza).
-prop(nodo_279658647,colore,Rosso).
+prop(nodo_279658647,is_in,via_della_resistenza).
+prop(nodo_279658647,colore,rosso).
 prop(nodo_279658647,timer_verde,0).
 prop(nodo_279658647,timer_giallo,0).
 prop(nodo_279658647,timer_rosso,0).
 
 
 prop(nodo_280886219,type,semaforo).
-prop(nodo_280886219,is_in,ViadellaResistenza).
-prop(nodo_280886219,colore,Rosso).
+prop(nodo_280886219,is_in,via_della_resistenza).
+prop(nodo_280886219,colore,rosso).
 prop(nodo_280886219,timer_verde,0).
 prop(nodo_280886219,timer_giallo,0).
 prop(nodo_280886219,timer_rosso,0).
 
 
 prop(nodo_1784570446,type,semaforo).
-prop(nodo_1784570446,is_in,ViaStefanoJacini).
-prop(nodo_1784570446,colore,Rosso).
+prop(nodo_1784570446,is_in,via_stefano_jacini).
+prop(nodo_1784570446,colore,rosso).
 prop(nodo_1784570446,timer_verde,0).
 prop(nodo_1784570446,timer_giallo,0).
 prop(nodo_1784570446,timer_rosso,0).
 
 
 prop(nodo_2623145440,type,semaforo).
-prop(nodo_2623145440,is_in,ViadellaResistenza).
-prop(nodo_2623145440,colore,Rosso).
+prop(nodo_2623145440,is_in,via_della_resistenza).
+prop(nodo_2623145440,colore,rosso).
 prop(nodo_2623145440,timer_verde,0).
 prop(nodo_2623145440,timer_giallo,0).
 prop(nodo_2623145440,timer_rosso,0).

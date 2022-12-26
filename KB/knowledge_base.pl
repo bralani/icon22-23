@@ -42,18 +42,3 @@ aggiorna_ciclo_semaforo(S, V, R, G) :- prop(S, subClassOf, semaforo),
 
 
 
-% Esempio
-prop(via_giordano_bruno, type, strada_primaria).
-prop(via_giordano_bruno, nodi, [nodo_1, nodo_2, nodo_3, nodo_4]).
-
-prop(nodo_1, latitudine, 45.0).
-prop(nodo_1, longitudine, 9.0).
-
-prop(nodo_2, latitudine, 50.0).
-prop(nodo_2, longitudine, 9.0).
-
-prop(nodo_3, latitudine, 55.0).
-prop(nodo_3, longitudine, 9.0).
-
-prop(nodo_4, latitudine, 60.0).
-prop(nodo_4, longitudine, 9.0).
