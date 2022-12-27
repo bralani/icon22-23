@@ -3,13 +3,14 @@ Tonio, questo file è tutto tuo.
 
 Grazie.
 '''
+import HMM
 
-states1 = {'rosso', 'verde', 'giallo'}  # states
-obs1 = {'alto','medio','basso'}   # timer levels
+states = {'rosso', 'verde', 'giallo'}  # states
+obs = {'alto','medio','basso'}   # timer levels
 
 # pobs gives the observation model:
 #pobs[obs][state] is P(obs=on | state)
-pobs1 = {'alto': {'rosso': 0.90, 'verde': 0.10, 'giallo': 0.00},
+pobs = {'alto': {'rosso': 0.90, 'verde': 0.10, 'giallo': 0.00},
          'medio': {'rosso': 0.55, 'verde': 0.40, 'giallo': 0.05},
          'basso': {'rosso': 0.10, 'verde': 0.70, 'giallo': 0.20}}
 
@@ -51,8 +52,10 @@ yellow_red = 5/5
 yellow_green = 0/5
 
 
-trans1 = {'rosso': {'rosso': red_red, 'verde': red_green, 'giallo': red_yellow},
+trans = {'rosso': {'rosso': red_red, 'verde': red_green, 'giallo': red_yellow},
           'verde': {'rosso': green_red, 'verde': green_green, 'giallo': green_yellow},
           'giallo': {'rosso': yellow_red, 'verde': yellow_green, 'giallo': yellow_yellow}}
 
-print(trans1)
+indist = {st:1.0/len(states) for st in states}
+
+hmm = HMM(states, obs, pobs, trans, indist)
