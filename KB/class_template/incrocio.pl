@@ -1,4 +1,4 @@
-/* Classe incrocio
+/* Classe incrocio sottoclasse di nodo
  *
  * Contiene i seguenti attributi:
  *
@@ -7,3 +7,4 @@
  * - latitudine: indica la latitudine dell'incrocio
  * - longitudine: indica la longitudine dell'incrocio
  */
+prop(incrocio, subClassOf, nodo).
