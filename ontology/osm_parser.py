@@ -236,8 +236,8 @@ def carica_file(locale=0):
                 for nodo in lista_dati_nodi_strada:
                     if nodo['id'] in nodi_in_comune_lista:
                         nodi_in_comune = nodo['id']
-                        if strada_1["id"] not in strade_incroci:
-                            strade_incroci.append(strada_1["id"])
+                        if strada_1["name"].lower() not in strade_incroci:
+                            strade_incroci.append(strada_1["name"].lower())
                         latitudine_nodo_comune = nodo['lat']
                         longitudine_nodo_comune = nodo['lon']
         for semaforo in lista_semafori:

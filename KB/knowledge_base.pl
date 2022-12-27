@@ -21,6 +21,29 @@ somma_nodi(X, Y, S) :- prop(X, latitudine, L1), prop(Y, latitudine, L2),
                        prop(X, longitudine, G1), prop(Y, longitudine, G2), 
                        S is abs(L1 - L2 + G1 - G2).
 
+/**
+ * Restituisce gli incroci immediatamente vicini dell'incrocio passato in input.
+ * Due incroci sono immediatamente vicini se collegati da una stessa strada.
+ *
+ * @param Incrocio: Incrocio di cui si vogliono conoscere i vicini
+ * @param Vicini: lista di incroci vicini (viene restituito il risultato)
+ */
+vicini_incrocio(Incrocio, Vicini) :- prop(Incrocio, type, incrocio), 
+                                     prop(Incrocio, strade, Strade), 
+                                     vicini_strade_incrocio(Incrocio, Strade, Vicini).
+
+vicini_strade_incrocio(Incrocio, [], Vicini) :- Vicini = [].
+vicini_strade_incrocio(Incrocio, [S1|S2], Vicini) :- nodi_strada(S1, N1),
+                                                     suddividi_prefisso_suffisso(Incrocio, N1, Prefisso, Suffisso),
+                                                     inverti(Prefisso, Prefisso1),
+                                                     first(primo_incrocio, Suffisso, Vicino1),
+                                                     first(primo_incrocio, Prefisso1, Vicino2),
+                                                     vicini_strade_incrocio(Incrocio, S2, Vicini3),
+                                                     append(Vicini3, [Vicino1|Vicino2], Vicini).
+
+
+
+
 nodi_strada(X, N) :- prop(X, type, strada), prop(X, nodi, N).
 lat_lon(X, L, G) :- prop(X, latitudine, L), prop(X, longitudine, G).
 
