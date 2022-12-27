@@ -1,13 +1,3 @@
-# searchGeneric.py - Generic Searcher, including depth-first and A*
-# AIFCA Python3 code Version 0.9.5 Documentation at http://aipython.org
-# Download the zip file and read aipython.pdf for documentation
-
-# Artificial Intelligence: Foundations of Computational Agents http://artint.info
-# Copyright David L Poole and Alan K Mackworth 2017-2022.
-# This work is licensed under a Creative Commons
-# Attribution-NonCommercial-ShareAlike 4.0 International License.
-# See: http://creativecommons.org/licenses/by-nc-sa/4.0/deed.en
-
 from display import Displayable, visualize
 
 class Searcher(Displayable):
