@@ -1,5 +1,6 @@
 from pyswip import Prolog
 from KB.path_finding.searchProblem import SearchProblemHiddenGraph
+from KB.path_finding.searchGeneric import search
 
 class KnowledgeBase():
 
@@ -26,14 +27,15 @@ class KnowledgeBase():
         percorso: lista contenente il percorso da X a Y
         '''
 
-        self.search_problem = SearchProblemHiddenGraph(self.prolog, X, {Y})
+        self.search_problem = SearchProblemHiddenGraph(self, X, {Y})
         self.nodo_goal = Y
 
         percorso = []
-
-        query = "prop(X, type, strada)"
-        for atom in self.prolog.query(query):
-            percorso.append(atom["X"])
+        
+        '''
+        ricordati di fare il controllo di esistenza dei nodi
+        '''
+        search(self.search_problem)
 
         return percorso
 

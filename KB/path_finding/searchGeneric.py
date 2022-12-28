@@ -48,7 +48,7 @@ class Searcher(Displayable):
                      self.num_expanded,"paths expanded.")
 
 import heapq        # part of the Python standard library
-from searchProblem import Path
+from KB.path_finding.searchProblem import Path
 
 class FrontierPQ(object):
     """A frontier consists of a priority queue (heap), frontierpq, of
@@ -117,25 +117,19 @@ class AStarSearcher(Searcher):
         value = path.cost+self.problem.heuristic(path.end())
         self.frontier.add(path, value)
 
-import searchProblem as searchProblem
 
-def test(SearchClass, problem=searchProblem.proveproblem1):
+def search(problem):
     """Unit test for aipython searching algorithms.
     SearchClass is a class that takes a problem and implements search()
     problem is a search problem
     solutions is a list of optimal solutions 
     """
-    print("Testing problem 1:")
-    schr1 = SearchClass(problem)
+    schr1 = AStarSearcher(problem)
     path1 = schr1.search()
     print("Path found:",path1)
-    assert path1 is not None, "No path is found in problem1"
-    print("Passed unit test")
 
-if __name__ == "__main__":
-    #test(Searcher)
-    test(AStarSearcher)
-    
-searcher2 = AStarSearcher(searchProblem.proveproblem1)   # A*
+    return path1
+
+
 
 
