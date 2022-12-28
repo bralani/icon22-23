@@ -6,6 +6,29 @@ from tkinter.filedialog import askopenfilename
 #LETTURA DATI DA FILE
 #----------------------------------------------
 
+def unisci_strade(strade):
+    strade_unite = []
+    lista_strade_visitate = []
+    for str1 in strade:
+        nome_strada = str1["name"]
+        if nome_strada not in lista_strade_visitate:
+            lista_strade_visitate.append(nome_strada)
+            for str2 in strade:
+                if str2["id"] != str1["id"] and str2["name"] == str1["name"] :
+                    for nodo1 in str2["nodi"]:
+                        str1["nodi"].append(nodo1)
+            strade_unite.append(str1)
+    return strade_unite
+
+def elimina_duplicati(strade):
+    for str in strade:
+        result = []
+        for nodo in str["nodi"]:
+            if nodo not in result:
+                result.append(nodo)
+        str["nodi"] = result
+    return strade
+
 def carica_file(locale=0):
     '''
     Metodo carica_file
@@ -50,12 +73,19 @@ def carica_file(locale=0):
         lista_nodi_strada = []
         lista_dati_nodi_strada = []  
         lista_id_semafori = []
+        save = 0
+        name = ""
         for tag in way.findall('tag'): #Prendo dati sulla strada
             if tag.attrib['k'] == 'highway':
                 type_way =  tag.attrib['v']
+                if type_way == "cycleway":
+                    save = 0
 
             if tag.attrib['k'] == 'name':
                 name =  tag.attrib['v']
+
+            if tag.attrib['k'] == 'oneway':
+                save = 1
 
             if tag.attrib['k'] == 'maxspeed':
                 maxspeed =  tag.attrib['v']
@@ -69,18 +99,21 @@ def carica_file(locale=0):
                 if nd.attrib['ref'] in lista_id_semafori:
                     id_semaforo = nd.attrib['ref']
 
-        way_i = {
-            "id": way.get('id'),
-            "name": name,
-            "id_semaforo": id_semaforo, 
-            "highway": type_way,
-            "nodi": lista_nodi_strada,
-            "speed": maxspeed,
-            "lanes": lanes
-        }
-        
-        lista_strade.append(way_i)
+        if save ==1 and name != "":
+            way_i = {
+                "id": way.get('id'),
+                "name": name,
+                "id_semaforo": id_semaforo, 
+                "highway": type_way,
+                "nodi": lista_nodi_strada,
+                "speed": maxspeed,
+                "lanes": lanes
+            }
+            
+            lista_strade.append(way_i)
 
+    lista_strade = unisci_strade(lista_strade)
+    lista_strade = elimina_duplicati(lista_strade)
     nome_strada = ""
     for node in allnodes:
         for strade in lista_strade:
@@ -125,7 +158,6 @@ def carica_file(locale=0):
         highway = item["highway"]
         name = name.lower()
         
-
         if highway == "primary" or highway == "trunk" :
             highway = "strada_primaria" 
             if lanes == "":
@@ -236,8 +268,8 @@ def carica_file(locale=0):
                 for nodo in lista_dati_nodi_strada:
                     if nodo['id'] in nodi_in_comune_lista:
                         nodi_in_comune = nodo['id']
-                        if strada_1["name"].lower() not in strade_incroci:
-                            strade_incroci.append(strada_1["name"].lower())
+                        if strada_1["id"] not in strade_incroci:
+                            strade_incroci.append(strada_1["id"])
                         latitudine_nodo_comune = nodo['lat']
                         longitudine_nodo_comune = nodo['lon']
         for semaforo in lista_semafori:
@@ -246,6 +278,9 @@ def carica_file(locale=0):
                         
     semafori_comuni = '[{}]'.format(','.join(semafori_comuni))
     strade_incroci = '[{}]'.format(','.join(strade_incroci))
+
+    if len(nodi_in_comune) == 0:
+        nodi_in_comune= "0"
 
     incrocio += "\n"
     incrocio += "prop("+nodi_in_comune+",type,incrocio).\n"
@@ -268,5 +303,5 @@ def carica_file(locale=0):
 
 
 
-
+carica_file(locale=0)
 
