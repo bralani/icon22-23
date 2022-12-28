@@ -10,14 +10,14 @@
  * @param X: strada
  * @param L: lunghezza della strada (viene restituito il risultato)
  */
-lunghezza_strada(X, [Y,Z|[]], L) :- prop(X, type, strada), somma_nodi(Y, Z, L).
+lunghezza_strada(X, [Y,Z|[]], L) :- prop(X, type, strada), distanza_nodi(Y, Z, L).
 lunghezza_strada(X, [T|[S|C]], L) :- prop(X, type, strada),
-                        somma_nodi(T, S, TR),
+                        distanza_nodi(T, S, TR),
                         lunghezza_strada(X, [S|C], LN),
                         L is TR + LN.
 
 
-somma_nodi(X, Y, S) :- prop(X, latitudine, L1), prop(Y, latitudine, L2), 
+distanza_nodi(X, Y, S) :- prop(X, latitudine, L1), prop(Y, latitudine, L2), 
                        prop(X, longitudine, G1), prop(Y, longitudine, G2), 
                        S is abs(L1 - L2 + G1 - G2).
 
@@ -36,8 +36,8 @@ vicini_strade_incrocio(Incrocio, [], Vicini) :- Vicini = [].
 vicini_strade_incrocio(Incrocio, [S1|S2], Vicini) :- nodi_strada(S1, N1),
                                                      suddividi_prefisso_suffisso(Incrocio, N1, Prefisso, Suffisso),
                                                      inverti(Prefisso, Prefisso1),
-                                                     first(primo_incrocio, Suffisso, Vicino1),
-                                                     first(primo_incrocio, Prefisso1, Vicino2),
+                                                     first(primo_incrocio, Prefisso1, Vicino1),
+                                                     first(primo_incrocio, Suffisso, Vicino2),
                                                      vicini_strade_incrocio(Incrocio, S2, Vicini3),
                                                      append(Vicini3, [Vicino1|Vicino2], Vicini).
 
