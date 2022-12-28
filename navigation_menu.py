@@ -50,8 +50,9 @@ while True:
             else:
                 print("La strada non è stata trovata")
         elif scelta == "3":
-            print("Hai selezionato l'opzione 3.")
-            kb.ricerca_percorso("nodo1", "nodo2")
+            nodo1 = input("Inserisci il punto di partenza: ")
+            nodo2 = input("Inserisci il punto di arrivo: ") 
+            kb.ricerca_percorso(nodo1, nodo2)
         elif scelta == "4":
             break  # Esci dal loop
         else:

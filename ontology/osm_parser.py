@@ -193,6 +193,7 @@ def carica_file(locale=0):
 
     strada = strada.replace(" ", "_")
     strada = strada.replace("-", "_")
+    strada = strada.replace("'", "_")
     
     contents.insert(21, strada)
 
@@ -259,12 +260,11 @@ def carica_file(locale=0):
         contents = f.readlines()
         
         
-    lista_strade_incrocio = []
     nodi_in_comune_lista = "" 
     latitudine_nodo_comune = ""
     longitudine_nodo_comune = ""
     lista_semafori = ""
-    nodi_comune = []
+    nodi_in_comune = []
     semafori_comuni = []
     strade_incroci = []
     incrocio = ""
@@ -279,6 +279,7 @@ def carica_file(locale=0):
                         if strada_1["id"] not in strade_incroci:
                             strada_nome = strada_1["name"]
                             strada_nome = strada_nome.replace(" ", "_")
+                            strada_nome = strada_nome.replace("'", "_")
                             strada_nome = strada_nome.replace("-", "_")
                             strada_nome = strada_nome.lower()
                             strade_incroci.append(strada_nome)
