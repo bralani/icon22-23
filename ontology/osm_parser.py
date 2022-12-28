@@ -1,6 +1,5 @@
 import xml.etree.cElementTree as ET
-from tkinter import Tk
-from tkinter.filedialog import askopenfilename
+from tkinter import Tk, filedialog
 
 
 #LETTURA DATI DA FILE
@@ -54,8 +53,10 @@ def carica_file(locale=0):
     '''
 
     if locale == 1:
-        Tk().withdraw() 
-        filename = askopenfilename()
+        root = Tk()
+        root.withdraw()
+        root.call('wm', 'attributes', '.', '-topmost', True)
+        filename = filedialog.askopenfilename()
         tree = ET.parse(filename)
     else:
         tree = ET.parse('ontology/map/map_data.xml')
@@ -78,9 +79,9 @@ def carica_file(locale=0):
 
     for way in allway:
         lista_nodi_strada = []
-        lista_dati_nodi_strada = []  
+        lista_dati_nodi_strada = {} 
         lista_id_semafori = []
-        save = 0
+        save = 1
         name = ""
         for tag in way.findall('tag'): #Prendo dati sulla strada
             if tag.attrib['k'] == 'highway':
@@ -90,9 +91,6 @@ def carica_file(locale=0):
 
             if tag.attrib['k'] == 'name':
                 name =  tag.attrib['v']
-
-            if tag.attrib['k'] == 'oneway':
-                save = 1
 
             if tag.attrib['k'] == 'maxspeed':
                 maxspeed =  tag.attrib['v']
@@ -125,13 +123,23 @@ def carica_file(locale=0):
     for node in allnodes:
         for strade in lista_strade:
             if "nodo_"+node.attrib['id'] in strade["nodi"]:
+                nome_strada = strade["name"]
+                nome_strada = nome_strada.replace(" ", "_")
+                nome_strada = nome_strada.replace("-", "_")
+                nome_strada = nome_strada.replace("'", "_")
+                
                 nodo_strada_i = {
                     "id": "nodo_"+node.get('id'),
                     "lat": node.get('lat'),
-                    "lon": node.get('lon')
+                    "lon": node.get('lon'),
+                    "strade": [nome_strada]
                 }
-                nome_strada = strade["name"]
-                lista_dati_nodi_strada.append(nodo_strada_i)
+
+                if nodo_strada_i["id"] in lista_dati_nodi_strada:
+                    old_nodo = lista_dati_nodi_strada[nodo_strada_i["id"]]
+                    nodo_strada_i["strade"] = old_nodo["strade"] + nodo_strada_i["strade"]
+
+                lista_dati_nodi_strada[nodo_strada_i["id"]] = nodo_strada_i
 
         for tag in node.findall('tag'): #Prendo dati sul nodo che identifica il semaforo
             if tag.attrib['v'] == 'traffic_signals':
@@ -204,17 +212,20 @@ def carica_file(locale=0):
 
     #NODI STRADA    
     nodo = ""
-    for item in lista_dati_nodi_strada:
+    for idx in lista_dati_nodi_strada:
+        item = lista_dati_nodi_strada[idx]
+
         nodo_id = item["id"]
         lat = item["lat"]
         lon = item["lon"]
         
-        contents.append( "\n")
-        contents.append( "prop("+nodo_id+",type,nodo).\n")
-        contents.append( "prop("+nodo_id+",id,"+nodo_id+").\n")
-        contents.append( "prop("+nodo_id+",latitudine,"+lat+").\n")
-        contents.append( "prop("+nodo_id+",longitudine,"+lon+").\n")
-        contents.append("\n")
+        if len(item["strade"]) == 1:
+            contents.append( "\n")
+            contents.append( "prop("+nodo_id+",type,nodo).\n")
+            contents.append( "prop("+nodo_id+",id,"+nodo_id+").\n")
+            contents.append( "prop("+nodo_id+",latitudine,"+lat+").\n")
+            contents.append( "prop("+nodo_id+",longitudine,"+lon+").\n")
+            contents.append("\n")
 
 
     with open("KB/class_value/strada.pl", "w") as f:
@@ -259,52 +270,28 @@ def carica_file(locale=0):
     with open("KB/class_template/incrocio.pl", "r") as f:
         contents = f.readlines()
         
-        
-    nodi_in_comune_lista = "" 
-    latitudine_nodo_comune = ""
-    longitudine_nodo_comune = ""
-    lista_semafori = ""
-    nodi_in_comune = []
-    semafori_comuni = []
-    strade_incroci = []
+    semafori_comuni = "test"
     incrocio = ""
 
-    for strada_1 in lista_strade:
-        for strada_2 in lista_strade:
-            nodi_in_comune_lista = set(strada_1["nodi"]).intersection(strada_2["nodi"])
-            if len(nodi_in_comune_lista) > 0 and len(nodi_in_comune_lista) < 2 and nodi_in_comune_lista != "":
-                for nodo in lista_dati_nodi_strada:
-                    if nodo['id'] in nodi_in_comune_lista:
-                        nodi_in_comune = nodo['id']
-                        if strada_1["id"] not in strade_incroci:
-                            strada_nome = strada_1["name"]
-                            strada_nome = strada_nome.replace(" ", "_")
-                            strada_nome = strada_nome.replace("'", "_")
-                            strada_nome = strada_nome.replace("-", "_")
-                            strada_nome = strada_nome.lower()
-                            strade_incroci.append(strada_nome)
-                        latitudine_nodo_comune = nodo['lat']
-                        longitudine_nodo_comune = nodo['lon']
-        for semaforo in lista_semafori:
-            if strada_1['id'] == semaforo["strada"]:
-                semafori_comuni.append(semaforo["id"])
-                        
-    strade_incroci = elimina_duplicati(strade_incroci)
-    semafori_comuni = '[{}]'.format(','.join(semafori_comuni))
-    strade_incroci = '[{}]'.format(','.join(strade_incroci))
+    for idx in lista_dati_nodi_strada:
+        nodo = lista_dati_nodi_strada[idx]
+        
+        if len(nodo["strade"]) > 1:
+            strade_incroci = elimina_duplicati(nodo["strade"])
+            strade_incroci = '[{}]'.format(','.join(strade_incroci))
 
-    if len(nodi_in_comune) == 0:
-        nodi_in_comune= "0"
-
-    incrocio += "\n"
-    incrocio += "prop("+nodi_in_comune+",type,incrocio).\n"
-    incrocio += "prop("+nodi_in_comune+",strade,"+strade_incroci+").\n"
-    incrocio += "prop("+nodi_in_comune+",semafori,"+semafori_comuni+").\n"
-    incrocio += "prop("+nodi_in_comune+",lat,"+latitudine_nodo_comune+").\n"
-    incrocio += "prop("+nodi_in_comune+",lon,"+longitudine_nodo_comune+").\n"
-    incrocio += "\n"
+            incrocio += "\n"
+            incrocio += "prop("+nodo["id"]+",type,incrocio).\n"
+            incrocio += "prop("+nodo["id"]+",strade,"+strade_incroci+").\n"
+            incrocio += "prop("+nodo["id"]+",semafori,"+semafori_comuni+").\n"
+            incrocio += "prop("+nodo["id"]+",lat,"+nodo["lat"]+").\n"
+            incrocio += "prop("+nodo["id"]+",lon,"+nodo["lon"]+").\n"
+            incrocio += "\n"
 
     incrocio = incrocio.replace(" ", "_")
+    incrocio = incrocio.replace("-", "_")
+    incrocio = incrocio.replace("'", "_")
+    incrocio = incrocio.lower()
     contents.insert(10, incrocio)
 
     f.close()

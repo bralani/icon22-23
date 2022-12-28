@@ -36,8 +36,8 @@ vicini_strade_incrocio(Incrocio, [], Vicini) :- Vicini = [].
 vicini_strade_incrocio(Incrocio, [S1|S2], Vicini) :- nodi_strada(S1, N1),
                                                      suddividi_prefisso_suffisso(Incrocio, N1, Prefisso, Suffisso),
                                                      inverti(Prefisso, Prefisso1),
-                                                     first(primo_incrocio, Prefisso1, Vicino1),
-                                                     first(primo_incrocio, Suffisso, Vicino2),
+                                                     find_first(Prefisso1, Vicino1),
+                                                     find_first(Suffisso, Vicino2),
                                                      vicini_strade_incrocio(Incrocio, S2, Vicini3),
                                                      append(Vicini3, [Vicino1|Vicino2], Vicini).
 

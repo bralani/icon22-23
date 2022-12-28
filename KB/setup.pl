@@ -21,7 +21,10 @@ suddividi_prefisso_suffisso(X, [H|T], Prefix, Suffix) :-
     ).
 
 primo_incrocio(Nodo) :- prop(Nodo, type, incrocio).
-first(Predicate, List, Element) :- member(Element, List), call(Predicate, Element).
+find_first(List, First) :- findall(Elem, (member(Elem, List), call(primo_incrocio, Elem)), First).
+get_first([], First) :- First = [].
+get_first([S1], First) :- First = S1.
+get_first([S1,S2], First) :- First = S1.
 
 inverti(Lista, Invertita) :- inverti(Lista, [], Invertita).
 inverti([], Acc, Acc).
