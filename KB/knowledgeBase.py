@@ -1,4 +1,5 @@
 from pyswip import Prolog
+from KB.path_finding.searchProblem import SearchProblemHiddenGraph
 
 class KnowledgeBase():
 
@@ -25,6 +26,9 @@ class KnowledgeBase():
         percorso: lista contenente il percorso da X a Y
         '''
 
+        self.search_problem = SearchProblemHiddenGraph(self.prolog, X, {Y})
+        self.nodo_goal = Y
+
         percorso = []
 
         query = "prop(X, type, strada)"
@@ -32,6 +36,46 @@ class KnowledgeBase():
             percorso.append(atom["X"])
 
         return percorso
+
+    def vicini_incrocio(self, X):
+        '''
+        Metodo vicini_incrocio
+        -------------------
+        Dati di input
+        --------------
+        X: incrocio di cui si vogliono conoscere i vicini
+
+        Dati di output
+        -------------- 
+        vicini: lista contenente i vicini dell'incrocio passato in input
+        '''
+        vicini = []
+
+        query = "vicini_incrocio("+X+", S)"
+        for atom in self.prolog.query(query):
+            vicini = atom["S"]
+
+        return vicini
+
+    def euristica_nodi(self, X):
+        '''
+        Metodo euristica_nodi
+        -------------------
+        Dati di input
+        --------------
+        X: nodo di cui si vuole conoscere l'euristica(distanza dal nodo di arrivo)
+
+        Dati di output
+        -------------- 
+        euristica: euristica del nodo passato in input
+        '''
+        euristica = 0
+
+        query = "distanza_nodi("+X+", " + self.nodo_goal + ", S)"
+        for atom in self.prolog.query(query):
+            euristica = atom["S"]
+
+        return euristica
 
     def lista_strade(self):
         '''

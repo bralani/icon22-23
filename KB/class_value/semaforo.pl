@@ -18,7 +18,7 @@ prop(nodo_279380861,timer_rosso,0).
 
 
 prop(nodo_279658647,type,semaforo).
-prop(nodo_279658647,is_in,via_della_resistenza).
+prop(nodo_279658647,is_in,via_stefano_jacini).
 prop(nodo_279658647,colore,rosso).
 prop(nodo_279658647,timer_verde,0).
 prop(nodo_279658647,timer_giallo,0).

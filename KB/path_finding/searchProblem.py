@@ -40,7 +40,7 @@ class Arc(object):
         else:
             return str(self.from_node)+" --> "+str(self.to_node)
 
-class Search_problem_from_nonexplicit_graph(Search_problem):
+class SearchProblemHiddenGraph(Search_problem):
     """A search problem consists of:
     * a list or set of nodes
     * a list or set of arcs
@@ -50,8 +50,9 @@ class Search_problem_from_nonexplicit_graph(Search_problem):
     * a dictionary that maps each node into its (x,y) position
     """
 
-    def __init__(self, start=None, goals=set(), positions={}):
+    def __init__(self, prolog=None, start=None, goals=set(), positions={}):
         
+        self.prolog = prolog
         self.start = start
         self.goals = goals
         self.positions = positions
@@ -66,11 +67,12 @@ class Search_problem_from_nonexplicit_graph(Search_problem):
 
     def neighbors(self,node):
         """returns the neighbors of node"""
-        return self.neighs[node] # richiamo la query del prolog passando il nodo
+        return self.prolog.vicini_incrocio(node)
 
     def heuristic(self,node): # do due input nodo di dove mi trovo e nodo di arrivo
         """Gives the heuristic value of node n.
         Returns 0 if not overridden in the hmap."""
+        return self.prolog.euristica_nodi(node)
         
     def __repr__(self):
         """returns a string representation of the search problem"""
