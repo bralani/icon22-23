@@ -20,7 +20,7 @@ def unisci_strade(strade):
             strade_unite.append(str1)
     return strade_unite
 
-def elimina_duplicati(strade):
+def elimina_duplicati_strade(strade):
     for str in strade:
         result = []
         for nodo in str["nodi"]:
@@ -28,6 +28,13 @@ def elimina_duplicati(strade):
                 result.append(nodo)
         str["nodi"] = result
     return strade
+
+def elimina_duplicati(lista):
+    result = []
+    for li in lista:
+        if li not in result:
+            result.append(li)
+    return result
 
 def carica_file(locale=0):
     '''
@@ -113,7 +120,7 @@ def carica_file(locale=0):
             lista_strade.append(way_i)
 
     lista_strade = unisci_strade(lista_strade)
-    lista_strade = elimina_duplicati(lista_strade)
+    lista_strade = elimina_duplicati_strade(lista_strade)
     nome_strada = ""
     for node in allnodes:
         for strade in lista_strade:
@@ -186,6 +193,7 @@ def carica_file(locale=0):
 
     strada = strada.replace(" ", "_")
     strada = strada.replace("-", "_")
+    
     contents.insert(21, strada)
 
     f.close()
@@ -269,13 +277,18 @@ def carica_file(locale=0):
                     if nodo['id'] in nodi_in_comune_lista:
                         nodi_in_comune = nodo['id']
                         if strada_1["id"] not in strade_incroci:
-                            strade_incroci.append(strada_1["id"])
+                            strada_nome = strada_1["name"]
+                            strada_nome = strada_nome.replace(" ", "_")
+                            strada_nome = strada_nome.replace("-", "_")
+                            strada_nome = strada_nome.lower()
+                            strade_incroci.append(strada_nome)
                         latitudine_nodo_comune = nodo['lat']
                         longitudine_nodo_comune = nodo['lon']
         for semaforo in lista_semafori:
             if strada_1['id'] == semaforo["strada"]:
                 semafori_comuni.append(semaforo["id"])
                         
+    strade_incroci = elimina_duplicati(strade_incroci)
     semafori_comuni = '[{}]'.format(','.join(semafori_comuni))
     strade_incroci = '[{}]'.format(','.join(strade_incroci))
 
