@@ -60,7 +60,7 @@ def carica_file(locale=0):
         tree = ET.parse(filename)
     else:
         tree = ET.parse('ontology/map/map_data.xml')
-
+    '''
     root = tree.getroot()
     allnodes=root.findall('node')
     lista_semafori = []
@@ -127,6 +127,8 @@ def carica_file(locale=0):
                 nome_strada = nome_strada.replace(" ", "_")
                 nome_strada = nome_strada.replace("-", "_")
                 nome_strada = nome_strada.replace("'", "_")
+                nome_strada = nome_strada.replace(".", "_")
+                nome_strada = nome_strada.replace('"', "_")
                 
                 nodo_strada_i = {
                     "id": "nodo_"+node.get('id'),
@@ -192,6 +194,13 @@ def carica_file(locale=0):
             if speed == "":
                 speed = "30"
         elementi_lista = '[{}]'.format(','.join(item["nodi"]))
+
+        name = name.replace(" ", "_")
+        name = name.replace("-", "_")
+        name = name.replace("'", "_")
+        name = name.replace(".", "_")
+        name = name.replace('"', "_")
+
         strada += "prop("+name+",type,"+highway+").\n"
         strada += "prop("+name+",nome,"+name+").\n"
         strada += "prop("+name+",num_corsie,"+lanes+").\n"
@@ -199,10 +208,6 @@ def carica_file(locale=0):
         strada += "prop("+name+",nodi,"+elementi_lista+").\n"
         strada += "\n"
 
-    strada = strada.replace(" ", "_")
-    strada = strada.replace("-", "_")
-    strada = strada.replace("'", "_")
-    
     contents.insert(21, strada)
 
     f.close()
@@ -280,6 +285,13 @@ def carica_file(locale=0):
             strade_incroci = elimina_duplicati(nodo["strade"])
             strade_incroci = '[{}]'.format(','.join(strade_incroci))
 
+            strade_incroci = strade_incroci.replace(" ", "_")
+            strade_incroci = strade_incroci.replace("-", "_")
+            strade_incroci = strade_incroci.replace("'", "_")
+            strade_incroci = strade_incroci.replace('"', "_")
+            strade_incroci = strade_incroci.replace(".", "_")
+            strade_incroci = strade_incroci.lower()
+            
             incrocio += "\n"
             incrocio += "prop("+nodo["id"]+",type,incrocio).\n"
             incrocio += "prop("+nodo["id"]+",strade,"+strade_incroci+").\n"
@@ -288,19 +300,14 @@ def carica_file(locale=0):
             incrocio += "prop("+nodo["id"]+",longitudine,"+nodo["lon"]+").\n"
             incrocio += "\n"
 
-    incrocio = incrocio.replace(" ", "_")
-    incrocio = incrocio.replace("-", "_")
-    incrocio = incrocio.replace("'", "_")
-    incrocio = incrocio.lower()
     contents.insert(10, incrocio)
-
     f.close()
 
     with open("KB/class_value/incrocio.pl", "w") as f:
         contents = "".join(contents)
         f.write(contents)
 
-
+'''
 
 
 
