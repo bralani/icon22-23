@@ -10,12 +10,36 @@ def unisci_strade(strade):
     lista_strade_visitate = []
     for str1 in strade:
         nome_strada = str1["name"]
+        testa_str1 = str1["nodi"][0]
+        coda_str1= str1["nodi"][-1]
+        reverse_str1 = []
+        for nodo1 in str1["nodi"]:
+            reverse_str1.append(nodo1)
+        reverse_str1.reverse()
         if nome_strada not in lista_strade_visitate:
             lista_strade_visitate.append(nome_strada)
             for str2 in strade:
                 if str2["id"] != str1["id"] and str2["name"] == str1["name"] :
+                    testa_str2 = str2["nodi"][0]
+                    coda_str2 = str2["nodi"][-1]
+                    reverse_str2 = []
                     for nodo1 in str2["nodi"]:
-                        str1["nodi"].append(nodo1)
+                        reverse_str2.append(nodo1)
+                    reverse_str2.reverse()
+                    
+                    if coda_str1 == testa_str2:
+                        for nodo2 in str2["nodi"]:
+                            str1["nodi"].append(nodo2)
+
+                    if coda_str1 == coda_str2:
+                        for nodo2 in reverse_str2:
+                            str1["nodi"].append(nodo2)
+
+                    if testa_str1 == coda_str2:
+                        temp_nodi = str1["nodi"]
+                        str1["nodi"] = str2["nodi"]
+                        for nodo1 in temp_nodi:
+                            str1["nodi"].append(nodo1)
             strade_unite.append(str1)
     return strade_unite
 
@@ -59,8 +83,8 @@ def carica_file(locale=0):
         filename = filedialog.askopenfilename()
         tree = ET.parse(filename)
     else:
-        tree = ET.parse('ontology/map/map_data.xml')
-    '''
+        tree = ET.parse('ontology/map/map_2.xml')
+    
     root = tree.getroot()
     allnodes=root.findall('node')
     lista_semafori = []
@@ -161,7 +185,7 @@ def carica_file(locale=0):
     #GENERAZIONE CLAUSOLE
     #----------------------------------------------
 
-    with open("KB/class_template/strada.pl", "r") as f:
+    with open("KB/prolog/class_template/strada.pl", "r") as f:
         contents = f.readlines()
 
     #STRADA
@@ -212,9 +236,6 @@ def carica_file(locale=0):
 
     f.close()
 
-
-
-
     #NODI STRADA    
     nodo = ""
     for idx in lista_dati_nodi_strada:
@@ -233,7 +254,7 @@ def carica_file(locale=0):
             contents.append("\n")
 
 
-    with open("KB/class_value/strada.pl", "w") as f:
+    with open("KB/prolog/class_value/strada.pl", "w") as f:
         contents = "".join(contents)
         f.write(contents)
 
@@ -241,7 +262,7 @@ def carica_file(locale=0):
 
 
     #NODI SEMAFORO
-    with open("KB/class_template/semaforo.pl", "r") as f:
+    with open("KB/prolog/class_template/semaforo.pl", "r") as f:
         contents = f.readlines()
 
     semaforo = ""
@@ -266,13 +287,13 @@ def carica_file(locale=0):
 
     f.close()
 
-    with open("KB/class_value/semaforo.pl", "w") as f:
+    with open("KB/prolog/class_value/semaforo.pl", "w") as f:
         contents = "".join(contents)
         f.write(contents)
 
 
     #INCROCI
-    with open("KB/class_template/incrocio.pl", "r") as f:
+    with open("KB/prolog/class_template/incrocio.pl", "r") as f:
         contents = f.readlines()
         
     semafori_comuni = "test"
@@ -303,13 +324,9 @@ def carica_file(locale=0):
     contents.insert(10, incrocio)
     f.close()
 
-    with open("KB/class_value/incrocio.pl", "w") as f:
+    with open("KB/prolog/class_value/incrocio.pl", "w") as f:
         contents = "".join(contents)
         f.write(contents)
-
-'''
-
-
 
 carica_file(locale=0)
 
