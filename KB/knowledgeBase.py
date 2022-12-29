@@ -78,13 +78,28 @@ class KnowledgeBase():
         -------------- 
         euristica: euristica del nodo passato in input
         '''
-        euristica = 0
+        return self.distanza_nodi(X, self.nodo_goal)
 
-        query = "distanza_nodi("+X+", " + self.nodo_goal + ", S)"
+    def distanza_nodi(self, X, Y):
+        '''
+        Metodo distanza_nodi
+        -------------------
+        Dati di input
+        --------------
+        X: primo nodo
+        Y: secondo nodo
+
+        Dati di output
+        -------------- 
+        distanza: distanza tra i due nodi
+        '''
+        distanza = 0
+
+        query = "distanza_nodi("+X+", " + Y + ", S)"
         for atom in self.prolog.query(query):
-            euristica = atom["S"]
+            distanza = atom["S"]
 
-        return euristica
+        return distanza
 
     def lista_strade(self):
         '''
