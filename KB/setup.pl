@@ -62,8 +62,8 @@ find_first(List, First) :- findall(Elem,
                         get_first(ListTemp,First).
 
 get_first([], First) :- First = [].
-get_first([S1], First) :- First = S1.
-get_first([S1|S2], First) :- First = S1.
+get_first([S1], First) :- First = [S1].
+get_first([S1|S2], First) :- First = [S1].
 
 inverti(Lista, Invertita) :- inverti(Lista, [], Invertita).
 inverti([], Acc, Acc).
