@@ -42,7 +42,9 @@ class Searcher(Displayable):
                 neighs = self.problem.neighbors(path.end())
                 self.display(3,"Neighbors are", neighs)
                 for arc in reversed(list(neighs)):
-                    self.add_to_frontier(Path(path,arc))
+                    nodes = list(path.nodes())
+                    if arc.to_node not in nodes:
+                        self.add_to_frontier(Path(path,arc))
                 self.display(3,"Frontier:",self.frontier)
         self.display(1,"No (more) solutions. Total of",
                      self.num_expanded,"paths expanded.")

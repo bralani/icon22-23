@@ -55,9 +55,16 @@ class KnowledgeBase():
 
         query = "vicini_incrocio("+X+", S)"
         for atom in self.prolog.query(query):
-            vicini = atom["S"]
+            viciniTmp = atom["S"]
 
-        return vicini
+        for tmp in viciniTmp:
+            if(isinstance(tmp, list)):
+                for tmp2 in tmp:
+                    vicini.append(tmp2.value)
+            else:
+                vicini.append(tmp.value)
+
+        return list(set(vicini))
 
     def euristica_nodi(self, X):
         '''

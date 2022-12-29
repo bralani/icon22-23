@@ -284,8 +284,8 @@ def carica_file(locale=0):
             incrocio += "prop("+nodo["id"]+",type,incrocio).\n"
             incrocio += "prop("+nodo["id"]+",strade,"+strade_incroci+").\n"
             incrocio += "prop("+nodo["id"]+",semafori,"+semafori_comuni+").\n"
-            incrocio += "prop("+nodo["id"]+",lat,"+nodo["lat"]+").\n"
-            incrocio += "prop("+nodo["id"]+",lon,"+nodo["lon"]+").\n"
+            incrocio += "prop("+nodo["id"]+",latitudine,"+nodo["lat"]+").\n"
+            incrocio += "prop("+nodo["id"]+",longitudine,"+nodo["lon"]+").\n"
             incrocio += "\n"
 
     incrocio = incrocio.replace(" ", "_")
