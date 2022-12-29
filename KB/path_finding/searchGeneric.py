@@ -34,8 +34,6 @@ class Searcher(Displayable):
             self.display(2, "Expanding:",path,"(cost:",path.cost,")")
             self.num_expanded += 1
             if self.problem.is_goal(path.end()):    # solution found
-                self.display(1, self.num_expanded, "paths have been expanded and",
-                            len(self.frontier), "paths remain in the frontier")
                 self.solution = path   # store the solution found
                 return path
             else:
@@ -45,9 +43,6 @@ class Searcher(Displayable):
                     nodes = list(path.nodes())
                     if arc.to_node not in nodes:
                         self.add_to_frontier(Path(path,arc))
-                self.display(3,"Frontier:",self.frontier)
-        self.display(1,"No (more) solutions. Total of",
-                     self.num_expanded,"paths expanded.")
 
 import heapq        # part of the Python standard library
 from KB.path_finding.searchProblem import Path
@@ -120,7 +115,7 @@ class AStarSearcher(Searcher):
         self.frontier.add(path, value)
 
 
-def search(problem):
+def AStarsearch(problem):
     """Unit test for aipython searching algorithms.
     SearchClass is a class that takes a problem and implements search()
     problem is a search problem
@@ -128,9 +123,8 @@ def search(problem):
     """
     schr1 = AStarSearcher(problem)
     path1 = schr1.search()
-    print("Path found:",path1)
 
-    return path1
+    return list(path1.nodes())
 
 
 

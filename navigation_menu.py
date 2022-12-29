@@ -30,13 +30,14 @@ while True:
     while True:
         print("\n\nMenu:")
         print("1. Restituisci dati sulle strade")
-        print("2. Restituisci dati dui nodi di una strada")
+        print("2. Restituisci dati sui nodi di una strada")
         print("3. Ricerca percorso ottimale tra due nodi")
         print("4. Esci")
 
         scelta = input("Inserisci il numero dell'opzione desiderata: ")
 
         if scelta == "1":
+            print(kb.traffic_predict(1))
             get_lista_strade = kb.lista_strade()
             if len(get_lista_strade)>0:
                 print(get_lista_strade)
@@ -52,7 +53,11 @@ while True:
         elif scelta == "3":
             nodo1 = input("Inserisci il punto di partenza: ")
             nodo2 = input("Inserisci il punto di arrivo: ") 
-            kb.ricerca_percorso(nodo1, nodo2)
+            percorso = kb.ricerca_percorso(nodo1, nodo2)
+            if len(percorso)>0:
+                print(percorso)
+            else:
+                print("Non è stato trovato alcun percorso!")
         elif scelta == "4":
             break  # Esci dal loop
         else:

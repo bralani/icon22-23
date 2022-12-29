@@ -1,6 +1,8 @@
+import time
+import pickle
 from pyswip import Prolog
+from KB.path_finding.searchGeneric import AStarsearch
 from KB.path_finding.searchProblem import SearchProblemHiddenGraph
-from KB.path_finding.searchGeneric import search
 
 class KnowledgeBase():
 
@@ -8,10 +10,17 @@ class KnowledgeBase():
         '''
         Metodo init
         ----------------
-        Inizializza il motore di prolog
+        Inizializza il motore di prolog e gli algoritmi di machine learning
         '''
         self.prolog = Prolog()
-        self.prolog.consult("KB/knowledge_base.pl",catcherrors=False)
+        self.prolog.consult("KB/prolog/knowledge_base.pl",catcherrors=False)
+
+        with open('supervised_learning/models/tree_regression.sav', 'rb') as pickle_file:
+            self.tree_regression = pickle.load(pickle_file)
+
+        with open('supervised_learning/models/scaler_tree.sav', 'rb') as pickle_file:
+            self.scaler = pickle.load(pickle_file)
+
 
     def ricerca_percorso(self, X, Y):
         '''
@@ -32,12 +41,36 @@ class KnowledgeBase():
 
         percorso = []
         
-        '''
-        ricordati di fare il controllo di esistenza dei nodi
-        '''
-        search(self.search_problem)
+        query = "prop("+X+", type, incrocio)"
+        if list(self.prolog.query(query)) == 0:
+            return percorso
+            
+        query = "prop("+Y+", type, incrocio)"
+        if list(self.prolog.query(query)) == 0:
+            return percorso
+
+        percorso = AStarsearch(self.search_problem)
 
         return percorso
+
+    def predizione_traffico(self, type_strada):
+        '''
+        Metodo predizione_traffico
+        -------------------
+        Dati di input
+        --------------
+        type_strada: predice il traffico sulla strada passata in input
+
+        Dati di output
+        -------------- 
+        tasso_traffico: indice di traffico per quella strada all'orario attuale
+        '''
+        data = time.localtime()
+
+        X = [[data[2], data[1], data[3], data[6] > 4, type_strada]]
+        X = self.scaler.transform(X)
+
+        return self.tree_regression.predict(X)[0]
 
     def vicini_incrocio(self, X):
         '''

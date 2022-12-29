@@ -32,7 +32,7 @@ vicini_incrocio(Incrocio, Vicini) :- prop(Incrocio, type, incrocio),
                                      prop(Incrocio, strade, Strade), 
                                      vicini_strade_incrocio(Incrocio, Strade, Vicini).
 
-vicini_strade_incrocio(Incrocio, [], Vicini) :- Vicini = [].
+vicini_strade_incrocio(Incrocio, [], Vicini) :- prop(Incrocio, type, incrocio), Vicini = [].
 vicini_strade_incrocio(Incrocio, [S1|S2], Vicini) :- nodi_strada(S1, N1),
                                                      suddividi_prefisso_suffisso(Incrocio, N1, Prefisso, Suffisso),
                                                      inverti(Prefisso, Prefisso1),
@@ -46,22 +46,6 @@ vicini_strade_incrocio(Incrocio, [S1|S2], Vicini) :- nodi_strada(S1, N1),
 
 nodi_strada(X, N) :- prop(X, type, strada), prop(X, nodi, N).
 lat_lon(X, L, G) :- prop(X, latitudine, L), prop(X, longitudine, G).
-
-/**
- * Aggiorna i valori del nuovo ciclo di un semaforo.
- *
- * @param S: semaforo
- * @param V: timer verde
- * @param R: timer rosso
- * @param G: timer giallo
- */
-aggiorna_ciclo_semaforo(S, V, R, G) :- prop(S, subClassOf, semaforo), 
-                                       retract(prop(S, timer_verde, Z)),
-                                       retract(prop(S, timer_rosso, Y)),
-                                       retract(prop(S, timer_giallo, U)),
-                                       assertz(prop(S, timer_verde, V)),
-                                       assertz(prop(S, timer_rosso, R)),
-                                       assertz(prop(S, timer_giallo, G)).
 
 
 
