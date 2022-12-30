@@ -37,7 +37,6 @@ while True:
         scelta = input("Inserisci il numero dell'opzione desiderata: ")
 
         if scelta == "1":
-            print(kb.traffic_predict(1))
             get_lista_strade = kb.lista_strade()
             if len(get_lista_strade)>0:
                 print(get_lista_strade)

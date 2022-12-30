@@ -134,6 +134,25 @@ class KnowledgeBase():
 
         return distanza
 
+    def assegna_ciclo_semaforico(self, incrocio, strada, numero_sequenza, timer_verde, timer_giallo, timer_rosso):
+        '''
+        Metodo assegna_ciclo_semaforico
+        -------------------
+        Dati di input
+        --------------
+        incrocio: incrocio di cui si vuole assegnare il ciclo semaforico
+        strada: strada dell'incrocio di cui si vuole assegnare il timer
+        numero_sequenza: numero di sequenza del semaforo nel ciclo
+        timer_verde: durata del timer verde
+        timer_giallo: durata del timer giallo
+        timer_rosso: durata del timer rosso
+        '''
+
+        self.prolog.assertz("props(semaforo_"+incrocio+"_"+strada+", numero, " + numero_sequenza + ")")
+        self.prolog.assertz("props(semaforo_"+incrocio+"_"+strada+", timer_verde, " + timer_verde + ")")
+        self.prolog.assertz("props(semaforo_"+incrocio+"_"+strada+", timer_giallo, " + timer_giallo + ")")
+        self.prolog.assertz("props(semaforo_"+incrocio+"_"+strada+", timer_rosso, " + timer_rosso + ")")
+
     def lista_strade(self):
         '''
         Metodo lista_strade
