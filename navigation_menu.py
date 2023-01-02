@@ -29,9 +29,9 @@ while True:
  
     while True:
         print("\n\nMenu:")
-        print("1. Restituisci dati sulle strade")
-        print("2. Restituisci dati sui nodi di una strada")
-        print("3. Ricerca percorso ottimale tra due nodi")
+        print("1. Visualizza le strade")
+        print("2. Visualizza gli incroci")
+        print("3. Ricerca percorso ottimale tra due incroci")
         print("4. Esci")
 
         scelta = input("Inserisci il numero dell'opzione desiderata: ")
@@ -39,16 +39,16 @@ while True:
         if scelta == "1":
             get_lista_strade = kb.lista_strade()
             if len(get_lista_strade)>0:
-                print(get_lista_strade)
+                print(", ".join(get_lista_strade))
             else:
-                print("Non sono state trovate strade")
+                print("Non sono state trovate strade!")
         elif scelta == "2":
-            strada = input("Nome strada da ricercare: ")
-            get_lista_nodi_strada = kb.lista_nodi_strada(strada)
-            if len(get_lista_nodi_strada)>0:
-                print(get_lista_nodi_strada)
+            get_lista_incroci = kb.lista_incroci()
+            if len(get_lista_incroci)>0:
+                for incrocio in get_lista_incroci:
+                    print(incrocio["id"] + ": " + ", ".join(incrocio["strade"]))
             else:
-                print("La strada non è stata trovata")
+                print("Nessun incrocio è stato trovato!")
         elif scelta == "3":
             nodo1 = input("Inserisci il punto di partenza: ")
             nodo2 = input("Inserisci il punto di arrivo: ") 

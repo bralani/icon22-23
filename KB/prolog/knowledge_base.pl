@@ -33,7 +33,7 @@ vicini_incrocio(Incrocio, Vicini) :- prop(Incrocio, type, incrocio),
                                      vicini_strade_incrocio(Incrocio, Strade, Vicini).
 
 vicini_strade_incrocio(Incrocio, [], Vicini) :- prop(Incrocio, type, incrocio), Vicini = [].
-vicini_strade_incrocio(Incrocio, [S1|S2], Vicini) :- nodi_strada(S1, N1),
+vicini_strade_incrocio(Incrocio, [S1|S2], Vicini) :- prop(S1, nodi, N1),
                                                      suddividi_prefisso_suffisso(Incrocio, N1, Prefisso, Suffisso),
                                                      inverti(Prefisso, Prefisso1),
                                                      find_first(Prefisso1, Vicino1),
@@ -44,7 +44,6 @@ vicini_strade_incrocio(Incrocio, [S1|S2], Vicini) :- nodi_strada(S1, N1),
 
 
 
-nodi_strada(X, N) :- prop(X, type, strada), prop(X, nodi, N).
 lat_lon(X, L, G) :- prop(X, latitudine, L), prop(X, longitudine, G).
 
 

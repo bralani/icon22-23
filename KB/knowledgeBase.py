@@ -1,3 +1,4 @@
+from math import atan2, cos, radians, sin, sqrt
 import time
 import pickle
 from pyswip import Prolog
@@ -112,9 +113,9 @@ class KnowledgeBase():
         -------------- 
         euristica: euristica del nodo passato in input
         '''
-        return self.distanza_nodi(X, self.nodo_goal)
-
-    def distanza_nodi(self, X, Y):
+        return self.distanza_nodi_secondi(X, self.nodo_goal)
+    
+    def distanza_nodi_secondi(self, X, Y):
         '''
         Metodo distanza_nodi
         -------------------
@@ -125,15 +126,33 @@ class KnowledgeBase():
 
         Dati di output
         -------------- 
-        distanza: distanza tra i due nodi
+        distanza: distanza tra i due nodi in secondi
         '''
         distanza = 0
 
-        query = "distanza_nodi("+X+", " + Y + ", S)"
+        query = "lat_lon("+X+", L, G)"
         for atom in self.prolog.query(query):
-            distanza = atom["S"]
+            lat1 = atom["L"]
+            lon1 = atom["G"]
 
-        return distanza
+        query = "lat_lon("+Y+", L, G)"
+        for atom in self.prolog.query(query):
+            lat2 = atom["L"]
+            lon2 = atom["G"]
+
+        radius = 6371
+
+        dlat = radians(lat2 - lat1)
+        dlon = radians(lon2 - lon1)
+        a = (sin(dlat / 2) * sin(dlat / 2) + cos(radians(lat1)) * cos(radians(lat2)) * sin(dlon / 2) * sin(dlon / 2))
+        c = 2 * atan2(sqrt(a), sqrt(1 - a))
+        distanza = radius * c * 1000
+
+        # converte km in secondi(velocità media di 30km/h)
+        m_s = 30 / 3.6
+        secondi = distanza / m_s
+
+        return secondi
 
     def assegna_ciclo_semaforico(self, incrocio, strada, numero_sequenza, timer_verde, timer_giallo, timer_rosso):
         '''
@@ -170,56 +189,29 @@ class KnowledgeBase():
 
         return strade
 
-    def distanza_nodi(self, X, Y):
+
+    def lista_incroci(self):
         '''
-        Metodo distanza_nodi
+        Metodo lista_incroci
         -------------------
-        Dati di input
-        --------------
-        X: primo nodo
-        Y: secondo nodo
-
-        Dati di output
-        -------------- 
-        distanza: distanza tra i due nodi
-        '''
-        distanza = 0
-
-        query = "distanza_nodi("+X+", "+Y+", S)"
-        for atom in self.prolog.query(query):
-            distanza = atom["S"]
-
-        return distanza
-
-
-    def lista_nodi_strada(self, strada):
-        '''
-        Metodo lista_nodi_strada
-        -------------------
-        Dati di input
-        --------------
-        strada: strada di cui si vogliono conoscere i nodi 
         
         Dati di output
         -------------- 
-            nodi: lista contenente tutti i nodi della strada passata in input, 
-            con relativa latutidine e longitudine
+            nodi: lista contenente tutti gli incroci della strada passata in input, 
+            con le relative strade che si incrociano
         '''
 
-        strada = strada.replace(" ", "_")
-        strada = strada.replace("-", "_")
-        strada = strada.lower()
         nodi = []
         atom_nodi = []
-        for atom in self.prolog.query("nodi_strada("+strada+",N)"):
-            atom_nodi = atom["N"]
+        for atom in self.prolog.query("prop(N,type,incrocio)"):
+            atom_nodi.append(atom["N"])
 
         for nodo in atom_nodi:
-            id_nodo = nodo.value
-            for atom in self.prolog.query("lat_lon("+id_nodo+", L, G)"):
-                latitudine = atom["L"]
-                longitudine = atom["G"]
-            nodi.append({"id": id_nodo, "lat": latitudine, "lon": longitudine})
+            for atom in self.prolog.query("prop("+nodo+",strade,S)"):
+                strade = []
+                for strada in atom["S"]:
+                    strade.append(strada.value)
+                nodi.append({"id": nodo, "strade": strade})
 
         return nodi
     
