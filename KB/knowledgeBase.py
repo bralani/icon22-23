@@ -50,6 +50,7 @@ class KnowledgeBase():
             return percorso
 
         percorso = AStarsearch(self.search_problem)
+        percorso.reverse()
 
         return percorso
 

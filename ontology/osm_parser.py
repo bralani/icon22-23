@@ -175,11 +175,7 @@ def carica_file(locale=0):
                 else:
                     semaforo = ""
                 nome_strada = strade["name"]
-                nome_strada = nome_strada.replace(" ", "_")
-                nome_strada = nome_strada.replace("-", "_")
-                nome_strada = nome_strada.replace("'", "_")
-                nome_strada = nome_strada.replace(".", "_")
-                nome_strada = nome_strada.replace('"', "_")
+                nome_strada = pulisci_stringa(nome_strada)
                 
                 nodo_strada_i = {
                     "id": "nodo_"+node.get('id'),
@@ -235,13 +231,14 @@ def carica_file(locale=0):
                 lanes = "1"
             if speed == "":
                 speed = "30"
+
+        if "mph" in speed:
+            speed = speed.split("mph")[0].strip()
+            speed = str(int(int(speed)*1.60934))
+        
         elementi_lista = '[{}]'.format(','.join(item["nodi"]))
 
-        name = name.replace(" ", "_")
-        name = name.replace("-", "_")
-        name = name.replace("'", "_")
-        name = name.replace(".", "_")
-        name = name.replace('"', "_")
+        name = pulisci_stringa(name)
 
         strada += "prop("+name+",type,"+highway+").\n"
         strada += "prop("+name+",nome,"+name+").\n"
@@ -277,39 +274,6 @@ def carica_file(locale=0):
         f.write(contents)
 
 
-
-
-    #NODI SEMAFORO
-    with open("KB/prolog/class_template/semaforo.pl", "r") as f:
-        contents = f.readlines()
-
-    semaforo = ""
-    for item in lista_semafori:
-        nodo_id = "nodo_"+item["id"]
-        lat = item["lat"]
-        lon = item["lon"]
-        strada = item["strada"]
-        strada = strada.lower()
-
-        semaforo += "\n"
-        semaforo += "prop("+nodo_id+",type,semaforo).\n"
-        semaforo += "prop("+nodo_id+",is_in,"+strada+").\n"
-        semaforo += "prop("+nodo_id+",colore,rosso).\n"
-        semaforo += "prop("+nodo_id+",timer_verde,0).\n"
-        semaforo += "prop("+nodo_id+",timer_giallo,0).\n"
-        semaforo += "prop("+nodo_id+",timer_rosso,0).\n"
-        semaforo += "\n"
-
-    semaforo = semaforo.replace(" ", "_")
-    contents.insert(10, semaforo)
-
-    f.close()
-
-    with open("KB/prolog/class_value/semaforo.pl", "w") as f:
-        contents = "".join(contents)
-        f.write(contents)
-
-
     #INCROCI
     with open("KB/prolog/class_template/incrocio.pl", "r") as f:
         contents = f.readlines()
@@ -328,12 +292,7 @@ def carica_file(locale=0):
             strade_incroci = elimina_duplicati(nodo["strade"])
             strade_incroci = '[{}]'.format(','.join(strade_incroci))
 
-            strade_incroci = strade_incroci.replace(" ", "_")
-            strade_incroci = strade_incroci.replace("-", "_")
-            strade_incroci = strade_incroci.replace("'", "_")
-            strade_incroci = strade_incroci.replace('"', "_")
-            strade_incroci = strade_incroci.replace(".", "_")
-            strade_incroci = strade_incroci.lower()
+            strade_incroci = pulisci_stringa(strade_incroci)
             
             incrocio += "\n"
             incrocio += "prop("+nodo["id"]+",type,incrocio).\n"
@@ -350,5 +309,14 @@ def carica_file(locale=0):
         contents = "".join(contents)
         f.write(contents)
 
-carica_file(locale=0)
+def pulisci_stringa(str):
+    str = str.replace(" ", "_")
+    str = str.replace("-", "_")
+    str = str.replace("'", "_")
+    str = str.replace('"', "_")
+    str = str.replace(".", "_")
+    str = str.replace("&", "_")
+    str = str.lower()
+
+    return str
 
