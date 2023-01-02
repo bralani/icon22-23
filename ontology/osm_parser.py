@@ -30,10 +30,6 @@ def unisci_strade(strade):
                         reverse_str2.append(nodo1)
                     reverse_str2.reverse()
                     
-                    if coda_str1 == testa_str2:
-                        flag_trovato = 1
-                        for nodo2 in str2["nodi"]:
-                            str1["nodi"].append(nodo2)
 
                     if coda_str1 == coda_str2:
                         flag_trovato = 1
@@ -46,6 +42,12 @@ def unisci_strade(strade):
                         str1["nodi"] = str2["nodi"]
                         for nodo1 in temp_nodi:
                             str1["nodi"].append(nodo1)
+                    
+
+                    if  coda_str1 == testa_str2 or flag_trovato == 0:
+                        for nodo2 in str2["nodi"]:
+                            str1["nodi"].append(nodo2)
+
             strade_unite.append(str1)
     return strade_unite
 
