@@ -9,6 +9,7 @@ def unisci_strade(strade):
     strade_unite = []
     lista_strade_visitate = []
     for str1 in strade:
+        incremental_id = 0
         nome_strada = str1["name"]
         testa_str1 = str1["nodi"][0]
         coda_str1= str1["nodi"][-1]
@@ -20,6 +21,8 @@ def unisci_strade(strade):
             lista_strade_visitate.append(nome_strada)
             for str2 in strade:
                 if str2["id"] != str1["id"] and str2["name"] == str1["name"] :
+                    incremental_id = incremental_id+1
+                    flag_trovato = 0
                     testa_str2 = str2["nodi"][0]
                     coda_str2 = str2["nodi"][-1]
                     reverse_str2 = []
@@ -28,14 +31,17 @@ def unisci_strade(strade):
                     reverse_str2.reverse()
                     
                     if coda_str1 == testa_str2:
+                        flag_trovato = 1
                         for nodo2 in str2["nodi"]:
                             str1["nodi"].append(nodo2)
 
                     if coda_str1 == coda_str2:
+                        flag_trovato = 1
                         for nodo2 in reverse_str2:
                             str1["nodi"].append(nodo2)
 
                     if testa_str1 == coda_str2:
+                        flag_trovato = 1
                         temp_nodi = str1["nodi"]
                         str1["nodi"] = str2["nodi"]
                         for nodo1 in temp_nodi:
@@ -83,7 +89,7 @@ def carica_file(locale=0):
         filename = filedialog.askopenfilename()
         tree = ET.parse(filename)
     else:
-        tree = ET.parse('ontology/map/map_2.xml')
+        tree = ET.parse('ontology/map/map_america.xml')
     
     root = tree.getroot()
     allnodes=root.findall('node')
@@ -144,28 +150,8 @@ def carica_file(locale=0):
     lista_strade = unisci_strade(lista_strade)
     lista_strade = elimina_duplicati_strade(lista_strade)
     nome_strada = ""
+    
     for node in allnodes:
-        for strade in lista_strade:
-            if "nodo_"+node.attrib['id'] in strade["nodi"]:
-                nome_strada = strade["name"]
-                nome_strada = nome_strada.replace(" ", "_")
-                nome_strada = nome_strada.replace("-", "_")
-                nome_strada = nome_strada.replace("'", "_")
-                nome_strada = nome_strada.replace(".", "_")
-                nome_strada = nome_strada.replace('"', "_")
-                
-                nodo_strada_i = {
-                    "id": "nodo_"+node.get('id'),
-                    "lat": node.get('lat'),
-                    "lon": node.get('lon'),
-                    "strade": [nome_strada]
-                }
-
-                if nodo_strada_i["id"] in lista_dati_nodi_strada:
-                    old_nodo = lista_dati_nodi_strada[nodo_strada_i["id"]]
-                    nodo_strada_i["strade"] = old_nodo["strade"] + nodo_strada_i["strade"]
-
-                lista_dati_nodi_strada[nodo_strada_i["id"]] = nodo_strada_i
 
         for tag in node.findall('tag'): #Prendo dati sul nodo che identifica il semaforo
             if tag.attrib['v'] == 'traffic_signals':
@@ -177,6 +163,36 @@ def carica_file(locale=0):
                 }
                 lista_semafori.append(nodo_strada_i)
                 lista_id_semafori.append(node.get('id'))
+
+    for node in allnodes:
+        for strade in lista_strade:
+            if "nodo_"+node.attrib['id'] in strade["nodi"]:
+
+                if node.get('id') in lista_id_semafori:
+                    semaforo = node.get('id')
+                else:
+                    semaforo = ""
+                nome_strada = strade["name"]
+                nome_strada = nome_strada.replace(" ", "_")
+                nome_strada = nome_strada.replace("-", "_")
+                nome_strada = nome_strada.replace("'", "_")
+                nome_strada = nome_strada.replace(".", "_")
+                nome_strada = nome_strada.replace('"', "_")
+                
+                nodo_strada_i = {
+                    "id": "nodo_"+node.get('id'),
+                    "lat": node.get('lat'),
+                    "lon": node.get('lon'),
+                    "strade": [nome_strada],
+                    "semaforo":semaforo
+                }
+
+                if nodo_strada_i["id"] in lista_dati_nodi_strada:
+                    old_nodo = lista_dati_nodi_strada[nodo_strada_i["id"]]
+                    nodo_strada_i["strade"] = old_nodo["strade"] + nodo_strada_i["strade"]
+
+                lista_dati_nodi_strada[nodo_strada_i["id"]] = nodo_strada_i
+
 
 
                 
@@ -296,13 +312,17 @@ def carica_file(locale=0):
     with open("KB/prolog/class_template/incrocio.pl", "r") as f:
         contents = f.readlines()
         
-    semafori_comuni = "test"
     incrocio = ""
 
     for idx in lista_dati_nodi_strada:
         nodo = lista_dati_nodi_strada[idx]
         
         if len(nodo["strade"]) > 1:
+
+            if nodo["semaforo"] != "":
+                semaforo_presente = "1"
+            else:
+                semaforo_presente = "0"
             strade_incroci = elimina_duplicati(nodo["strade"])
             strade_incroci = '[{}]'.format(','.join(strade_incroci))
 
@@ -316,7 +336,7 @@ def carica_file(locale=0):
             incrocio += "\n"
             incrocio += "prop("+nodo["id"]+",type,incrocio).\n"
             incrocio += "prop("+nodo["id"]+",strade,"+strade_incroci+").\n"
-            incrocio += "prop("+nodo["id"]+",semafori,"+semafori_comuni+").\n"
+            incrocio += "prop("+nodo["id"]+",semafori,"+semaforo_presente+").\n"
             incrocio += "prop("+nodo["id"]+",latitudine,"+nodo["lat"]+").\n"
             incrocio += "prop("+nodo["id"]+",longitudine,"+nodo["lon"]+").\n"
             incrocio += "\n"
