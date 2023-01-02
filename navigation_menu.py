@@ -28,6 +28,7 @@ while True:
     kb = KnowledgeBase()
  
     while True:
+        kb.ciclo_semaforico("nodo_99062202")
         print("\n\nMenu:")
         print("1. Visualizza le strade")
         print("2. Visualizza gli incroci")

@@ -22,6 +22,12 @@ class KnowledgeBase():
         with open('supervised_learning/models/scaler_tree.sav', 'rb') as pickle_file:
             self.scaler = pickle.load(pickle_file)
 
+        self.dic = { 
+            "strada_primaria": self.predizione_traffico(1),
+            "strada_secondaria": self.predizione_traffico(2),
+            "strada_terziaria": self.predizione_traffico(3)
+        }
+        
 
     def ricerca_percorso(self, X, Y):
         '''
@@ -68,12 +74,49 @@ class KnowledgeBase():
         tasso_traffico: indice di traffico per quella strada all'orario attuale
         '''
         data = time.localtime()
-
+        
         X = [[data[2], data[1], data[3], data[6] > 4, type_strada]]
         X = self.scaler.transform(X)
 
         return self.tree_regression.predict(X)[0]
 
+    
+    def ciclo_semaforico(self,incrocio):
+        '''
+        Metodo vicini_incrocio
+        -------------------
+        Dati di input
+        --------------
+        incrocio: incrocio di cui si vogliono conoscere le strade per mappare il ciclo semaforico
+        '''
+        strade = []
+        query_incrocio = "prop("+incrocio+", strade, Strada)"
+        
+        for atom in self.prolog.query(query_incrocio):
+            strade = atom["Strada"]
+
+        array_verde = []
+        tempo_giallo = 4
+
+        for strada in strade:
+            query_strade = "prop("+strada.value+", type, TipoStrada)"
+            tipo_strada = list(self.prolog.query(query_strade))[0]["TipoStrada"]
+
+            indice_traffico = self.dic[tipo_strada]
+            tempo_verde = max(10,(indice_traffico*20) * 3)
+            array_verde.append(tempo_verde)
+            
+        i = 0
+        for strada in strade:
+            tempo_rosso = sum(array_verde) - array_verde[i]
+
+            self.assegna_ciclo_semaforico(incrocio,str(strada),str(i),str(array_verde[i]),str(tempo_giallo),str(tempo_rosso))
+            query_prova = "props(X, timer_rosso, Y)"
+            i = i+1
+        for atom in self.prolog.query(query_prova):
+            print(str(atom["X"]) + '\n' + str(atom["Y"])) 
+
+            
     def vicini_incrocio(self, X):
         '''
         Metodo vicini_incrocio
