@@ -36,6 +36,42 @@ class KnowledgeBase():
         for incrocio in incroci_semaforici:
             self.ciclo_semaforico(incrocio)
 
+    def init_CSP(self):
+        '''
+        Metodo init_CSP
+        ----------------
+        Inizializza il CSP
+        
+        Dati di output
+        -------------- 
+        incroci: lista contenente gli incroci
+        coppie_incroci: lista contenente le coppie di incroci da minimizzare
+        '''
+
+        incroci = []
+        coppie_incroci = []
+        query = "prop(Incrocio, type, incrocio)"
+        for atom in self.prolog.query(query):
+            incroci.append(atom["Incrocio"])
+
+        for incrocio in incroci:
+            semafori = 0
+            query = "prop("+incrocio+", semafori, Semafori)"
+            for atom in self.prolog.query(query):
+                semafori = atom["Semafori"]
+
+            if semafori == 1:
+                vicini = self.vicini_incrocio(incrocio)
+                semafori = 0
+                for vicino in vicini:
+                    query = "prop("+vicino+", semafori, Semafori)"
+                    for atom in self.prolog.query(query):
+                        semafori = atom["Semafori"]
+                    if semafori == 1:
+                        coppie_incroci.append((incrocio, vicino))
+
+        return incroci, coppie_incroci
+
     def ricerca_percorso(self, X, Y):
         '''
         Metodo lista_strade
@@ -90,7 +126,7 @@ class KnowledgeBase():
     
     def ciclo_semaforico(self,incrocio):
         '''
-        Metodo vicini_incrocio
+        Metodo ciclo_semaforico
         -------------------
         Dati di input
         --------------
@@ -178,6 +214,8 @@ class KnowledgeBase():
         distanza: distanza tra i due nodi in secondi
         '''
         distanza = 0
+        velocita = 30
+        radius = 6371
 
         query = "lat_lon("+X+", L, G)"
         for atom in self.prolog.query(query):
@@ -189,7 +227,6 @@ class KnowledgeBase():
             lat2 = atom["L"]
             lon2 = atom["G"]
 
-        radius = 6371
 
         dlat = radians(lat2 - lat1)
         dlon = radians(lon2 - lon1)
@@ -197,47 +234,50 @@ class KnowledgeBase():
         c = 2 * atan2(sqrt(a), sqrt(1 - a))
         distanza = radius * c * 1000
 
-        # converte km in secondi(velocità media di 30km/h)
-        m_s = 30 / 3.6
+
+        common_list = []
+        strade_X = []
+        query_incrocio = "prop("+X+", strade, Strada)"
+        for atom in self.prolog.query(query_incrocio):
+            strade_X = atom["Strada"]
+
+        for strade in strade_X:
+            common_list.append(strade.value)
+
+        strade_Y = []
+        query_incrocio = "prop("+Y+", strade, Strada)"
+        for atom in self.prolog.query(query_incrocio):
+            strade_Y = atom["Strada"]
+
+        for strade in strade_Y:
+            common_list.append(strade.value)
+
+        newlist = []
+        duplist = []
+
+        for i in common_list:
+            if i not in newlist:
+                newlist.append(i)
+            else:
+                duplist.append(i)
+
+        strada = ""
+        if len(duplist) > 0:
+            strada = duplist[0]
+
+            query_incrocio = "prop("+strada+",velocita_massima,V)"
+            velocita = list(self.prolog.query(query_incrocio))[0]["V"]
+
+        # converte km in secondi
+        m_s = velocita / 3.6
         secondi = distanza / m_s
 
         seconds_from_start += secondi
 
         # aggiunge i secondi di rosso del semaforo Y
-        if(add_seconds_red):
-            common_list = []
-            strade_X = []
-            query_incrocio = "prop("+X+", strade, Strada)"
-            
-            for atom in self.prolog.query(query_incrocio):
-                strade_X = atom["Strada"]
-
-            for strade in strade_X:
-                common_list.append(strade.value)
-
-            strade_Y = []
-            query_incrocio = "prop("+Y+", strade, Strada)"
-            
-            for atom in self.prolog.query(query_incrocio):
-                strade_Y = atom["Strada"]
-
-            for strade in strade_Y:
-                common_list.append(strade.value)
-
-            newlist = []
-            duplist = []
-
-            for i in common_list:
-                if i not in newlist:
-                    newlist.append(i)
-                else:
-                    duplist.append(i) # this is the duplicate
-
-            if len(duplist) > 0:
-                strada = duplist[0]
-                secondi_rosso = self.get_secondi_rosso(Y, strada, seconds_from_start)
-                secondi += secondi_rosso
-
+        if(add_seconds_red and strada != ""):
+            secondi_rosso = self.get_secondi_rosso(Y, strada, seconds_from_start)
+            secondi += secondi_rosso
 
         return secondi
 

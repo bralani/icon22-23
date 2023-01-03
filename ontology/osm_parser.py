@@ -91,7 +91,7 @@ def carica_file(locale=0):
         filename = filedialog.askopenfilename()
         tree = ET.parse(filename)
     else:
-        tree = ET.parse('ontology/map/map_america.xml')
+        tree = ET.parse('ontology/map/map.xml')
     
     root = tree.getroot()
     allnodes=root.findall('node')
@@ -290,9 +290,8 @@ def carica_file(locale=0):
             else:
                 semaforo_presente = "0"
             strade_incroci = elimina_duplicati(nodo["strade"])
+            map(lambda x: pulisci_stringa(x), strade_incroci)
             strade_incroci = '[{}]'.format(','.join(strade_incroci))
-
-            strade_incroci = pulisci_stringa(strade_incroci)
             
             incrocio += "\n"
             incrocio += "prop("+nodo["id"]+",type,incrocio).\n"
@@ -310,6 +309,8 @@ def carica_file(locale=0):
         f.write(contents)
 
 def pulisci_stringa(str):
+    if(str[0].isdigit()):
+        str = "_"+str
     str = str.replace(" ", "_")
     str = str.replace("-", "_")
     str = str.replace("'", "_")
