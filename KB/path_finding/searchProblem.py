@@ -65,12 +65,12 @@ class SearchProblemHiddenGraph(Search_problem):
         """is True if node is a goal"""
         return node in self.goals
 
-    def neighbors(self,node):
+    def neighbors(self,node,seconds_from_start=0):
         """returns the neighbors of node"""
         neigh = self.prolog.vicini_incrocio(node)
         arcs = []
         for item in neigh:
-            arcs.append(Arc(node, item, self.prolog.distanza_nodi_secondi(node, item), None))
+            arcs.append(Arc(node, item, self.prolog.distanza_nodi_secondi(node, item, seconds_from_start), None))
         return arcs
 
     def heuristic(self,node): # do due input nodo di dove mi trovo e nodo di arrivo

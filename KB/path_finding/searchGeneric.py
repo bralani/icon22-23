@@ -35,9 +35,9 @@ class Searcher(Displayable):
             self.num_expanded += 1
             if self.problem.is_goal(path.end()):    # solution found
                 self.solution = path   # store the solution found
-                return path
+                return path, path.cost
             else:
-                neighs = self.problem.neighbors(path.end())
+                neighs = self.problem.neighbors(path.end(), path.cost)
                 self.display(3,"Neighbors are", neighs)
                 for arc in reversed(list(neighs)):
                     nodes = list(path.nodes())
@@ -122,9 +122,9 @@ def AStarsearch(problem):
     solutions is a list of optimal solutions 
     """
     schr1 = AStarSearcher(problem)
-    path1 = schr1.search()
+    path1, cost = schr1.search()
 
-    return list(path1.nodes())
+    return list(path1.nodes()), cost
 
 
 

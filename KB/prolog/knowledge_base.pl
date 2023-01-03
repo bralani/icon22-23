@@ -46,5 +46,17 @@ vicini_strade_incrocio(Incrocio, [S1|S2], Vicini) :- prop(S1, nodi, N1),
 
 lat_lon(X, L, G) :- prop(X, latitudine, L), prop(X, longitudine, G).
 
+tempi_verdi_gialli(Incrocio, 0, Tempo) :- props(Semaforo, incrocio, Incrocio),
+                                          props(Semaforo, timer_verde, Verde),
+                                          props(Semaforo, timer_giallo, Giallo),
+                                          Tempo is Verde + Giallo.
+tempi_verdi_gialli(Incrocio, Sequenza, Tempo) :- Sequenza > 0,
+                                                 props(Semaforo, incrocio, Incrocio),
+                                                 props(Semaforo, timer_verde, Verde),
+                                                 props(Semaforo, timer_giallo, Giallo),
+                                                 Sequenza1 is Sequenza - 1,
+                                                 tempi_verdi_gialli(Incrocio, Sequenza1, Tempo_prec),
+                                                 Tempo is Verde + Giallo + Tempo_prec.
+
 
 

@@ -28,7 +28,6 @@ while True:
     kb = KnowledgeBase()
  
     while True:
-        kb.ciclo_semaforico("nodo_99062202")
         print("\n\nMenu:")
         print("1. Visualizza le strade")
         print("2. Visualizza gli incroci")
@@ -53,9 +52,14 @@ while True:
         elif scelta == "3":
             nodo1 = input("Inserisci il punto di partenza: ")
             nodo2 = input("Inserisci il punto di arrivo: ") 
-            percorso = kb.ricerca_percorso(nodo1, nodo2)
+            percorso, secondi = kb.ricerca_percorso(nodo1, nodo2)
             if len(percorso)>0:
-                print(percorso)
+                print("\nPercorso trovato: ")
+                print(" --> ".join(percorso))
+
+                print("\nTempo stimato: ")
+                print(secondi + " secondi")
+
             else:
                 print("Non è stato trovato alcun percorso!")
         elif scelta == "4":

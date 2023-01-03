@@ -27,7 +27,14 @@ class KnowledgeBase():
             "strada_secondaria": self.predizione_traffico(2),
             "strada_terziaria": self.predizione_traffico(3)
         }
+
+        incroci_semaforici = []
+        query_incrocio = "prop(Incrocio, semafori, 1)"
+        for atom in self.prolog.query(query_incrocio):
+            incroci_semaforici.append(atom["Incrocio"])
         
+        for incrocio in incroci_semaforici:
+            self.ciclo_semaforico(incrocio)
 
     def ricerca_percorso(self, X, Y):
         '''
@@ -56,10 +63,10 @@ class KnowledgeBase():
         if list(self.prolog.query(query)) == 0:
             return percorso
 
-        percorso = AStarsearch(self.search_problem)
+        percorso, secondi = AStarsearch(self.search_problem)
         percorso.reverse()
 
-        return percorso
+        return percorso, secondi
 
     def predizione_traffico(self, type_strada):
         '''
@@ -108,13 +115,10 @@ class KnowledgeBase():
             
         i = 0
         for strada in strade:
-            tempo_rosso = sum(array_verde) - array_verde[i]
+            tempo_rosso = sum(array_verde) + (tempo_giallo * (len(strade) - 1)) - array_verde[i]
 
             self.assegna_ciclo_semaforico(incrocio,str(strada),str(i),str(array_verde[i]),str(tempo_giallo),str(tempo_rosso))
-            query_prova = "props(X, timer_rosso, Y)"
             i = i+1
-        for atom in self.prolog.query(query_prova):
-            print(str(atom["X"]) + '\n' + str(atom["Y"])) 
 
             
     def vicini_incrocio(self, X):
@@ -158,7 +162,7 @@ class KnowledgeBase():
         '''
         return self.distanza_nodi_secondi(X, self.nodo_goal)
     
-    def distanza_nodi_secondi(self, X, Y):
+    def distanza_nodi_secondi(self, X, Y, seconds_from_start=0):
         '''
         Metodo distanza_nodi
         -------------------
@@ -195,7 +199,100 @@ class KnowledgeBase():
         m_s = 30 / 3.6
         secondi = distanza / m_s
 
+        # aggiunge i secondi di rosso del semaforo Y
+        if(seconds_from_start > 0):
+            seconds_from_start += secondi
+            common_list = []
+            strade_X = []
+            query_incrocio = "prop("+X+", strade, Strada)"
+            
+            for atom in self.prolog.query(query_incrocio):
+                strade_X = atom["Strada"]
+
+            for strade in strade_X:
+                common_list.append(strade.value)
+
+            strade_Y = []
+            query_incrocio = "prop("+Y+", strade, Strada)"
+            
+            for atom in self.prolog.query(query_incrocio):
+                strade_Y = atom["Strada"]
+
+            for strade in strade_Y:
+                common_list.append(strade.value)
+
+            newlist = []
+            duplist = []
+
+            for i in common_list:
+                if i not in newlist:
+                    newlist.append(i)
+                else:
+                    duplist.append(i) # this is the duplicate
+
+            if len(duplist) > 0:
+                strada = duplist[0]
+                secondi_rosso = self.get_secondi_rosso(Y, strada, seconds_from_start)
+                secondi += secondi_rosso
+
+
         return secondi
+
+    def get_secondi_rosso(self, incrocio, strada, seconds_from_start):
+        '''
+        Metodo get_secondi_rosso
+        -------------------
+        Dati di input
+        --------------
+        incrocio: incrocio di cui si vuole conoscere i secondi di rosso
+        strada: strada dalla quale si arriva al nodo X
+        seconds_from_start: secondi dall'inizio del percorso
+
+        Dati di output
+        -------------- 
+        secondi_rosso: secondi di rosso del semaforo se si arriva al tempo
+                       seconds_from_start
+        '''
+        secondi_rosso = 0
+        sequenza = 0
+        timer_verde = 0
+        timer_giallo = 0
+        timer_rosso = 0
+        trovato = False
+
+        query = "props(semaforo_"+incrocio+"_"+strada+", Verb, Value)"
+        for atom in self.prolog.query(query):
+            trovato = True
+            if(atom["Verb"] == "sequenza"):
+                sequenza = atom["Value"]
+            elif(atom["Verb"] == "timer_verde"):
+                timer_verde = atom["Value"]
+            elif(atom["Verb"] == "timer_giallo"):
+                timer_giallo = atom["Value"]
+            elif(atom["Verb"] == "timer_rosso"):
+                timer_rosso = atom["Value"]
+
+        if(trovato):
+
+            tempi_prec = 0
+
+            if sequenza > 0:
+                # preleva i tempi di verde e giallo dei semafori precedenti al numero di sequenza
+                query = "tempi_verdi_gialli("+incrocio+", "+str(sequenza-1)+", Tempi)"
+                for atom in self.prolog.query(query):
+                    tempi_prec = atom["Tempi"]
+
+            totale_ciclo = timer_verde + timer_giallo + timer_rosso
+            seconds_from_start = (seconds_from_start % totale_ciclo)
+
+            if seconds_from_start < tempi_prec:
+                secondi_rosso = tempi_prec - seconds_from_start
+            elif seconds_from_start < (timer_verde + timer_giallo + tempi_prec):
+                secondi_rosso = 0
+            else:
+                secondi_rosso = tempi_prec + totale_ciclo - seconds_from_start
+
+        return secondi_rosso
 
     def assegna_ciclo_semaforico(self, incrocio, strada, numero_sequenza, timer_verde, timer_giallo, timer_rosso):
         '''
@@ -211,7 +308,8 @@ class KnowledgeBase():
         timer_rosso: durata del timer rosso
         '''
 
-        self.prolog.assertz("props(semaforo_"+incrocio+"_"+strada+", numero, " + numero_sequenza + ")")
+        self.prolog.assertz("props(semaforo_"+incrocio+"_"+strada+", sequenza, " + numero_sequenza + ")")
+        self.prolog.assertz("props(semaforo_"+incrocio+"_"+strada+", incrocio, " + incrocio + ")")
         self.prolog.assertz("props(semaforo_"+incrocio+"_"+strada+", timer_verde, " + timer_verde + ")")
         self.prolog.assertz("props(semaforo_"+incrocio+"_"+strada+", timer_giallo, " + timer_giallo + ")")
         self.prolog.assertz("props(semaforo_"+incrocio+"_"+strada+", timer_rosso, " + timer_rosso + ")")
