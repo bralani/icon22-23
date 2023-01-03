@@ -160,9 +160,9 @@ class KnowledgeBase():
         -------------- 
         euristica: euristica del nodo passato in input
         '''
-        return self.distanza_nodi_secondi(X, self.nodo_goal)
+        return self.distanza_nodi_secondi(X, self.nodo_goal, 0, False)
     
-    def distanza_nodi_secondi(self, X, Y, seconds_from_start=0):
+    def distanza_nodi_secondi(self, X, Y, seconds_from_start=0, add_seconds_red=True):
         '''
         Metodo distanza_nodi
         -------------------
@@ -170,6 +170,8 @@ class KnowledgeBase():
         --------------
         X: primo nodo
         Y: secondo nodo
+        seconds_from_start: tempo trascorso dall'inizio del percorso
+        add_seconds_red: se True aggiunge i secondi di rosso del semaforo
 
         Dati di output
         -------------- 
@@ -199,9 +201,10 @@ class KnowledgeBase():
         m_s = 30 / 3.6
         secondi = distanza / m_s
 
+        seconds_from_start += secondi
+
         # aggiunge i secondi di rosso del semaforo Y
-        if(seconds_from_start > 0):
-            seconds_from_start += secondi
+        if(add_seconds_red):
             common_list = []
             strade_X = []
             query_incrocio = "prop("+X+", strade, Strada)"
