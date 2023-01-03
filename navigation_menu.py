@@ -58,7 +58,7 @@ while True:
                 print(" --> ".join(percorso))
 
                 print("\nTempo stimato: ")
-                print(secondi + " secondi")
+                print(str(secondi) + " secondi")
 
             else:
                 print("Non è stato trovato alcun percorso!")
