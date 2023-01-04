@@ -1,61 +1,51 @@
-'''
-Tonio, questo file è tutto tuo.
+from HMM import HMM
+from HMM import simulate, create_eg
 
-Grazie.
-'''
-import HMM
+sequence = [{'tempo': 20, 'colore': 'rosso'}, {'tempo': 10,'colore': 'verde'}, {'tempo': 5, 'colore': 'giallo'}]
 
-states = {'rosso', 'verde', 'giallo'}  # states
-obs = {'alto','medio','basso'}   # timer levels
+def syncr(seq1, seq2):  # usando mcm; #seq1 = sequenza primo incrocio; #seq2 = sequenza secondo incrocio
+    chain1 = create_chain(seq1)
+    chain2 = create_chain(seq2)
+    return 0
+    #return nuovo ciclo semaforico dell'incrocio 2
 
-# pobs gives the observation model:
-#pobs[obs][state] is P(obs=on | state)
-pobs = {'alto': {'rosso': 0.90, 'verde': 0.10, 'giallo': 0.00},
-         'medio': {'rosso': 0.55, 'verde': 0.40, 'giallo': 0.05},
-         'basso': {'rosso': 0.10, 'verde': 0.70, 'giallo': 0.20}}
+def shift(seq2): #seq2 = sequenza secondo incrocio
+    
+    return 0
+    #return nuova sequenza shiftata se hanno lunghezza ciclo uguale
 
-percentred = 65
-percentgreen = 30
-percentyellow = 5
-cicle = 100
-secred = (cicle * percentred) / 100 # seconds of red
-secgreen = (cicle * percentgreen) / 100 # seconds of green
-secyellow = (cicle * percentyellow) / 100 # seconds of yellow
-seconds = 5
+def create_chain(sequence):
+    cycle = 0
+    for state in sequence:
+        cycle += state['tempo']
+    
+    numstati = int (cycle / 5)
+    list = []
+    for i in range(numstati):
+        list.append('ciclo_'+str(i))
+    
+    states = set(list)
+    obs = {'rosso', 'verde', 'giallo'}
+    
+    trans = {}
+    for state in states:
+        i = int(state.split('ciclo_')[1])
+        trans[state] = {}
+        for state1 in states:
+            j = int (state1.split('ciclo_')[1])
+            if j == (i + 1) % numstati:
+                trans[state][state1] = 1
+            else:
+                trans[state][state1] = 0
+    
+    pobs = {}
 
-seconds = seconds % cicle
+    indist = {'verde': 0, 'giallo': 0, 'rosso': 0}
+    indist[sequence[0]['colore']] = 1
 
-'''
-red_red = (secred - seconds)/secred if (seconds < secgreen + secyellow) else (secred - (secgreen + secyellow))/secred
-red_green = seconds / secred if seconds < secgreen else secgreen/secred
-red_yellow = max(0.0, (seconds - secgreen) / secred if (seconds - secgreen) < secyellow else secyellow/secred)
+    hmm = HMM(states, obs, pobs, trans, indist)
+    return hmm
 
-green_green = (secgreen - seconds)/secgreen if (seconds < secred + secyellow) else (secgreen - (secred + secyellow))/secgreen
-green_yellow = seconds / secgreen if seconds < secyellow else secyellow/secgreen
-green_red = max(0.0, (seconds - secyellow) / secgreen if (seconds - secyellow) < secred else secred/secgreen)
+hmm = create_chain(sequence)
 
-yellow_yellow = (secyellow - seconds)/secyellow if (seconds < secred + secgreen) else (secred - (secgreen + secred))/secyellow
-yellow_red = seconds / secyellow if seconds < secred else secred/secyellow
-yellow_green = max(0.0, (seconds - secred) / secyellow if (seconds - secred) < secgreen else secgreen/secyellow)
-'''
-
-red_red = 60/65
-red_green = 5/65
-red_yellow = 0/65
-
-green_green = 25/30
-green_yellow = 5/30
-green_red = 0/30
-
-yellow_yellow = 0/5
-yellow_red = 5/5
-yellow_green = 0/5
-
-
-trans = {'rosso': {'rosso': red_red, 'verde': red_green, 'giallo': red_yellow},
-          'verde': {'rosso': green_red, 'verde': green_green, 'giallo': green_yellow},
-          'giallo': {'rosso': yellow_red, 'verde': yellow_green, 'giallo': yellow_yellow}}
-
-indist = {st:1.0/len(states) for st in states}
-
-hmm = HMM(states, obs, pobs, trans, indist)
+stateseq, obsseq = simulate(hmm, 10000)
