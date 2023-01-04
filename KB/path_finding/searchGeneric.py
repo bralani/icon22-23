@@ -1,4 +1,4 @@
-from display import Displayable, visualize
+from KB.path_finding.display import Displayable, visualize
 
 class Searcher(Displayable):
     """returns a searcher for a problem.
