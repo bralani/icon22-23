@@ -17,7 +17,7 @@ class Variable(object):
     Variables are ordered according to their name.
     """
 
-    def __init__(self, name, domain,value= "", position=None ):
+    def __init__(self, name, domain, position=None):
         """Variable
         name a string
         domain a list of printable values
@@ -26,8 +26,7 @@ class Variable(object):
         self.name = name   # string
         self.domain = domain # list of values
         self.position = position if position else (random.random(), random.random())
-        self.size = len(domain) 
-        self.value = value
+        self.size = len(domain)
 
     def __str__(self):
         return self.name

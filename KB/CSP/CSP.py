@@ -8,6 +8,7 @@
 # Attribution-NonCommercial-ShareAlike 4.0 International License.
 # See: http://creativecommons.org/licenses/by-nc-sa/4.0/deed.en
 
+from cspSLS import SLSearcher
 from cspProblem import Variable, Constraint, CSP
 class SoftConstraint(Constraint):
     """A Constraint consists of
@@ -31,57 +32,33 @@ Un incrocio si puo sincronizzare se l'latro incrocio diventera master.
 - Una variabile si puà sincronizzare se: 
     1) Sono vicini 
     2) Le due variabili hanno i valori ogininali, hanno lo stesso valore di se stesse(es B=B, A=A)
-    3) Se una variabile ha un valore diverso B=A, significa che B è stato sincronizzato con A ed è SLAVE
+    3) Se una variabile ha un valore diverso B<-A(B=A), significa che A è stato sincronizzato con B ed è SLAVE
     4) Si possono sincronnizare due nodi se uno dei due ha valore unguale a se stesso ed il suo valore non appare come assegnazione ad altre variabili 
 
     A=A B=B C=B 
         
 '''     
 
-A = Variable('A', {'A','B','C'},"A") 
-B = Variable('B', {'A','B','C'},"B")
-C = Variable('C', {'A','B','C'},"C")
+
+
+
 '''
-1= MASTER
-0= SLAVE
-  
 A=A, B=B, C=C
 A=A, B=A, C=C 
 A=A, B=A, C=A
 
+A->A, B->B, C->C  
+A->B, B->B, C->C -> A=B
+A->B, B->B, C->C
+A->B C->A 
 
-
-''' 
-
-
-def vicini(a,b):
-    if [a,b] in lista_incroci_vicini:
-        return 1
-    else:
-        return 0
-      
-#Non va bene la lista abbiamo bisogno di variabili 
-def sincro(a,b, lista_variabili):
-    sincronizzato = False
-    if schiavo_di_matteo(a,b):  
-        if a==a or b==b: 
-            if a==a and b!=b: 
-                if trova_assegnazione(a, lista_variabili):
-                    sincronizzato = True
-            if a.value!=a and b.value==b: 
-                if trova_assegnazione(a, lista_variabili):
-                    sincronizzato = True
-    return sincronizzato 
-           
-
-    
+'''    
 
 
 
-c1 = SoftConstraint([A,B],sincro,"c1")
+#c1 = SoftConstraint([A,B],sincro,"c1")
 
 
-scsp1 = CSP("scsp1", {A,B,C}, [c1])
 
 ### The second soft C
 
@@ -128,7 +105,45 @@ class DF_branch_and_bound_opt(Displayable):
                 for val in var.domain:
                     self.cbsearch({var:val}|asst, newcost, rem_cons)
 
+#Non va bene la lista abbiamo bisogno di variabili 
+def sincro(inc_a,inc_b,val_a,val_b):
+    sincronizzato = True
+
+    if (inc_a!=val_a and val_b==inc_a):
+        sincronizzato = False
+    elif (inc_a!=val_a and inc_b!=val_b):
+        sincronizzato = False
+    elif (inc_b!=val_b and val_a==inc_b):
+        sincronizzato = False
+    
+    return sincronizzato
+'''
+def sincro(a,b):
+    sincronizzato = False
+    if a==a or b==b: 
+        if a==a and b!=b: 
+            sincronizzato = True
+        if a!=a and b==b: 
+            sincronizzato = True
+    return sincronizzato 
+'''
+A = Variable('A', {'A','B'}) 
+B = Variable('B', {'B','A','C'})
+C = Variable('C', {'C','B'})
+
+const_1 = Constraint([A,B,A.name,B.name],sincro)
+const_2 = Constraint([A,C,A.name,C.name],sincro)
+const_3 = Constraint([C,A,C.name,A.name],sincro)
+const_4 = Constraint([C,B,C.name,B.name],sincro)
+const_5 = Constraint([B,C,B.name,C.name],sincro)
+const_6 = Constraint([B,A,B.name,A.name],sincro)
+scsp1 = CSP("scsp1", {A,B,C}, [const_1,const_2,const_3,const_4,const_5,const_6])
+se1 = SLSearcher(scsp1)
+print(se1.search(1000000, 0.1, 0.9))
+
+'''
 bnb = DF_branch_and_bound_opt(scsp1)
 bnb.max_display_level=3 # show more detail
 bnb.optimize()
+'''
 
