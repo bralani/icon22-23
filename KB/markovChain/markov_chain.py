@@ -1,5 +1,6 @@
-from HMM import HMM
-from HMM import simulate, create_eg
+from KB.markovChain.HMM import HMM, simulate, create_eg
+import numpy as np
+import copy
 
 sequence = [{'tempo': 15, 'colore': 'rosso'},
             {'tempo': 8.5, 'colore': 'verde'},
@@ -9,15 +10,63 @@ sequence = [{'tempo': 15, 'colore': 'rosso'},
             {'tempo': 1.5, 'colore': 'giallo'}]
 seconds = 5
 
-def syncr(seq1, seq2):  # usando mcm; #seq1 = sequenza primo incrocio; #seq2 = sequenza secondo incrocio
+def getprobverde(chain1, chain2, seconddist):
+    return 1
+
+def syncro(seq1, seq2, seconddist):  # usando mcm; #seq1 = sequenza primo incrocio; #seq2 = sequenza secondo incrocio
+    '''
+    seq1 = sequenza primo incrocio
+    seq2 = sequenza secondo incrocio
+    seconddist = secondi di distanza tra seq1 e seq2
+    '''
     chain1 = create_chain(seq1)
     chain2 = create_chain(seq2)
-    return 0
+    
+    cycle1 = 0
+    for value in seq1:
+        cycle1 += value['tempo']
+    
+    cycle2 = 0
+    for value in seq2:
+        cycle2 += value['tempo']
+    
+    if cycle1 == cycle2:
+        soglia = getprobverde(chain1, chain2, seconddist)
+        i = 0
+        itMax = len(chain2.states)
+        maxChain2 = chain2
+        while soglia != 1 and i < itMax:
+            seq2 = shift(seq2)
+            chain2 = create_chain(seq2)
+            soglia = getprobverde(chain1, chain2, seconddist)
+            if (getprobverde(chain1, maxChain2, seconddist) < soglia):
+                maxChain2 = chain2
+            i += 1
+    else:
+        #mcm
+        print()
+        
+    return maxChain2
     #return nuovo ciclo semaforico dell'incrocio 2
 
 def shift(seq2): #seq2 = sequenza secondo incrocio
+    i = len(seq2)-1
+    t = 0
+    while t < seconds:
+        t += seq2[i]['tempo']
+        i -= 1
     
-    return 0
+    if t > seconds:
+        i += 1
+        diff = t - seconds
+        copia = copy.deepcopy(seq2[i])
+        seq2.insert(i, copia)
+        seq2[i]['tempo'] = diff
+        seq2[i+1]['tempo'] -= diff
+
+    pos = len(seq2)-(i+1)
+
+    return np.roll(seq2, pos)
     #return nuova sequenza shiftata se hanno lunghezza ciclo uguale
 
 def create_chain(sequence):
@@ -54,13 +103,13 @@ def create_chain(sequence):
         for i in range(len(sequence)):
             if time <= sequence[i]['tempo'] + tot:
                 pobs[state][sequence[i]['colore']] = 1
-                pobs[state][sequence[(i+1)%3]['colore']] = 0
-                pobs[state][sequence[(i+2)%3]['colore']] = 0
+                pobs[state][sequence[(i+1)%len(sequence)]['colore']] = 0
+                pobs[state][sequence[(i+2)%len(sequence)]['colore']] = 0
                 break
             elif time - (sequence[i]['tempo'] + tot) < seconds:
-                pobs[state][sequence[i]['colore']] = (time - (sequence[i]['tempo'] + tot)) / seconds
-                pobs[state][sequence[(i+1)%3]['colore']] = (seconds - (time - (sequence[i]['tempo'] + tot))) / seconds
-                pobs[state][sequence[(i+2)%3]['colore']] = 0
+                pobs[state][sequence[i]['colore']] = (seconds - (time - (sequence[i]['tempo'] + tot))) / seconds
+                pobs[state][sequence[(i+1)%len(sequence)]['colore']] = (time - (sequence[i]['tempo'] + tot)) / seconds
+                pobs[state][sequence[(i+2)%len(sequence)]['colore']] = 0
                 break
             tot += sequence[i]['tempo']
             i += 1
@@ -71,9 +120,9 @@ def create_chain(sequence):
     hmm = HMM(states, obs, pobs, trans, indist)
     return hmm
 
-hmm = create_chain(sequence)
+#hmm = create_chain(sequence)
 
-stateseq, obsseq = simulate(hmm, 10000)
+#stateseq, obsseq = simulate(hmm, 10000)
 
 '''
 # pobs gives the observation model:

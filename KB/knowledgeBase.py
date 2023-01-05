@@ -5,7 +5,7 @@ import pickle
 from pyswip import Prolog
 from KB.path_finding.searchGeneric import AStarsearch
 from KB.path_finding.searchProblem import SearchProblemHiddenGraph
-
+from KB.markovChain.markov_chain import syncro
 class KnowledgeBase():
 
     def __init__(self):
@@ -36,6 +36,8 @@ class KnowledgeBase():
         
         for incrocio in incroci_semaforici:
             self.ciclo_semaforico(incrocio)
+        
+        syncro(self.get_ciclo_semaforico('nodo_21300247', 'wilshire_boulevard'), self.get_ciclo_semaforico('nodo_21306066', 'wilshire_boulevard'))
 
     def init_CSP(self):
         '''

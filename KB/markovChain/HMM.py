@@ -1,5 +1,5 @@
 import random
-from display import Displayable
+from KB.markovChain.display import Displayable
 
 def sample_one(dist):
     """returns the index of a single sample from normalized distribution dist."""
