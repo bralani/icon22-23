@@ -1,7 +1,12 @@
 from HMM import HMM
 from HMM import simulate, create_eg
 
-sequence = [{'tempo': 20, 'colore': 'rosso'}, {'tempo': 10,'colore': 'verde'}, {'tempo': 5, 'colore': 'giallo'}]
+sequence = [{'tempo': 15, 'colore': 'rosso'},
+            {'tempo': 8.5, 'colore': 'verde'},
+            {'tempo': 1.5, 'colore': 'giallo'},
+            {'tempo': 15, 'colore': 'rosso'},
+            {'tempo': 8.5, 'colore': 'verde'},
+            {'tempo': 1.5, 'colore': 'giallo'}]
 seconds = 5
 
 def syncr(seq1, seq2):  # usando mcm; #seq1 = sequenza primo incrocio; #seq2 = sequenza secondo incrocio
@@ -53,7 +58,7 @@ def create_chain(sequence):
                 pobs[state][sequence[(i+2)%3]['colore']] = 0
                 break
             elif time - (sequence[i]['tempo'] + tot) < seconds:
-                pobs[state][sequence[i]['colore']] = time - (sequence[i]['tempo'] + tot) / seconds
+                pobs[state][sequence[i]['colore']] = (time - (sequence[i]['tempo'] + tot)) / seconds
                 pobs[state][sequence[(i+1)%3]['colore']] = (seconds - (time - (sequence[i]['tempo'] + tot))) / seconds
                 pobs[state][sequence[(i+2)%3]['colore']] = 0
                 break
