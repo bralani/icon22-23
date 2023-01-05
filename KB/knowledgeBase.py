@@ -1,4 +1,5 @@
 from math import atan2, cos, radians, sin, sqrt
+import random
 import time
 import pickle
 from pyswip import Prolog
@@ -132,6 +133,7 @@ class KnowledgeBase():
         --------------
         incrocio: incrocio di cui si vogliono conoscere le strade per mappare il ciclo semaforico
         '''
+        tempo_totale = 0
         strade = []
         query_incrocio = "prop("+incrocio+", strade, Strada)"
         
@@ -146,8 +148,15 @@ class KnowledgeBase():
             tipo_strada = list(self.prolog.query(query_strade))[0]["TipoStrada"]
 
             indice_traffico = self.dic[tipo_strada]
-            tempo_verde = max(10,(indice_traffico*20) * 3)
+            tempo_verde = max(10,int((indice_traffico*20) * 3))
             array_verde.append(tempo_verde)
+            tempo_totale = tempo_totale + tempo_verde + tempo_giallo
+            
+        resto = 5 - (tempo_totale % 5)
+        if resto != 0:
+            # sceglie casualmente un incrocio in cui aggiungere il resto
+            incrocio_random = random.randint(0,len(strade)-1)
+            array_verde[incrocio_random] += resto
             
         i = 0
         for strada in strade:
@@ -297,11 +306,64 @@ class KnowledgeBase():
                        seconds_from_start
         '''
         secondi_rosso = 0
+        ciclo = self.get_ciclo_semaforico(incrocio, strada)
+        if len(ciclo) == 0:
+            return 0
+
+        totale_ciclo = 0
+        for item in ciclo:
+            totale_ciclo += item["tempo"]
+
+        seconds_from_start = (seconds_from_start % totale_ciclo)
+
+        seconds = 0
+        i = 0
+        while seconds < seconds_from_start:
+            seconds += ciclo[i]["tempo"]
+            i = i+1
+        
+        if ciclo[i-1]["colore"] == "verde":
+            secondi_rosso = 0
+        else:
+            secondi_rosso = seconds - seconds_from_start
+            i = i % len(ciclo)
+            while ciclo[i]["colore"] != "verde":
+                secondi_rosso += ciclo[i]["tempo"]
+                i = (i+1) % len(ciclo)
+
+        return secondi_rosso
+
+    def get_ciclo_semaforico(self, incrocio, strada):
+        '''
+        Metodo get_ciclo_semaforico
+        -------------------
+        Dati di input
+        --------------
+        incrocio: incrocio di cui si vuole conoscere il ciclo semaforico
+        strada: strada dell'incrocio di cui si vuole conoscere il ciclo
+
+        Dati di output
+        -------------- 
+        ciclo: ciclo di quel semaforo all'interno dell'incrocio
+        '''
+        ciclo = []
+        totale = 0
         sequenza = 0
         timer_verde = 0
         timer_giallo = 0
         timer_rosso = 0
         trovato = False
+
+        max = 0
+        # preleva il totale di quel ciclo semaforico
+        query = "all_sequenze("+incrocio+", Seq)"
+        for atom in self.prolog.query(query):
+            if atom["Seq"] > max:
+                max = atom["Seq"]
+        query = "tempi_verdi_gialli("+incrocio+", "+str(max)+", Tempi)"
+        for atom in self.prolog.query(query):
+            totale = atom["Tempi"]
+
 
         query = "props(semaforo_"+incrocio+"_"+strada+", Verb, Value)"
         for atom in self.prolog.query(query):
@@ -325,17 +387,16 @@ class KnowledgeBase():
                 for atom in self.prolog.query(query):
                     tempi_prec = atom["Tempi"]
 
-            totale_ciclo = timer_verde + timer_giallo + timer_rosso
-            seconds_from_start = (seconds_from_start % totale_ciclo)
+            if(tempi_prec > 0):
+                ciclo.append({'colore': 'rosso', 'tempo': tempi_prec})
 
-            if seconds_from_start < tempi_prec:
-                secondi_rosso = tempi_prec - seconds_from_start
-            elif seconds_from_start < (timer_verde + timer_giallo + tempi_prec):
-                secondi_rosso = 0
-            else:
-                secondi_rosso = tempi_prec + totale_ciclo - seconds_from_start
+            ciclo.append({'colore': 'verde', 'tempo': timer_verde})
+            ciclo.append({'colore': 'giallo', 'tempo': timer_giallo})
 
-        return secondi_rosso
+            if(tempi_prec + timer_verde + timer_giallo < totale):
+                ciclo.append({'colore': 'rosso', 'tempo': totale - (tempi_prec + timer_verde + timer_giallo)})
+
+        return ciclo
 
     def assegna_ciclo_semaforico(self, incrocio, strada, numero_sequenza, timer_verde, timer_giallo, timer_rosso):
         '''

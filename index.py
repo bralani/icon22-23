@@ -28,7 +28,6 @@ while True:
     kb = KnowledgeBase()
  
     while True:
-        kb.init_CSP()
         print("\n\nMenu:")
         print("1. Visualizza le strade")
         print("2. Visualizza gli incroci")
