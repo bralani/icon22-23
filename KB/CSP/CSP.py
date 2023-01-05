@@ -106,8 +106,11 @@ class DF_branch_and_bound_opt(Displayable):
                     self.cbsearch({var:val}|asst, newcost, rem_cons)
 
 #Non va bene la lista abbiamo bisogno di variabili 
-def sincro(inc_a,inc_b,val_a,val_b):
+def sincro(inc_a,inc_b):
     sincronizzato = True
+
+    val_a =inc_a
+    val_b = inc_b
 
     if (inc_a!=val_a and val_b==inc_a):
         sincronizzato = False
@@ -115,6 +118,9 @@ def sincro(inc_a,inc_b,val_a,val_b):
         sincronizzato = False
     elif (inc_b!=val_b and val_a==inc_b):
         sincronizzato = False
+
+
+    
     
     return sincronizzato
 '''
@@ -131,12 +137,12 @@ A = Variable('A', {'A','B'})
 B = Variable('B', {'B','A','C'})
 C = Variable('C', {'C','B'})
 
-const_1 = Constraint([A,B,A.name,B.name],sincro)
-const_2 = Constraint([A,C,A.name,C.name],sincro)
-const_3 = Constraint([C,A,C.name,A.name],sincro)
-const_4 = Constraint([C,B,C.name,B.name],sincro)
-const_5 = Constraint([B,C,B.name,C.name],sincro)
-const_6 = Constraint([B,A,B.name,A.name],sincro)
+const_1 = Constraint([A,B,"A","B"],sincro)
+const_2 = Constraint([A,C],sincro)
+const_3 = Constraint([C,A],sincro)
+const_4 = Constraint([C,B],sincro)
+const_5 = Constraint([B,C],sincro)
+const_6 = Constraint([B,A],sincro)
 scsp1 = CSP("scsp1", {A,B,C}, [const_1,const_2,const_3,const_4,const_5,const_6])
 se1 = SLSearcher(scsp1)
 print(se1.search(1000000, 0.1, 0.9))

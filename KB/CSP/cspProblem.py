@@ -85,7 +85,8 @@ class CSP(object):
         self.var_to_const = {var:set() for var in self.variables}
         for con in constraints:
             for var in con.scope:
-                self.var_to_const[var].add(con)
+                if not isinstance(var, str):
+                    self.var_to_const[var].add(con)
 
     def __str__(self):
         """string representation of CSP"""
