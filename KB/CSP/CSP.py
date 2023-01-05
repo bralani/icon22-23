@@ -105,44 +105,54 @@ class DF_branch_and_bound_opt(Displayable):
                 for val in var.domain:
                     self.cbsearch({var:val}|asst, newcost, rem_cons)
 
+dict_nodi = {
+    "A": "",
+    "B": "",
+    "C": "" 
+}
+
 #Non va bene la lista abbiamo bisogno di variabili 
 def sincro(inc_a,inc_b):
-    sincronizzato = True
 
-    val_a =inc_a
-    val_b = inc_b
+    def verifica_vincoli(w1,w2):
+        in_a = inc_a
+        in_b = inc_b
 
-    if (inc_a!=val_a and val_b==inc_a):
-        sincronizzato = False
-    elif (inc_a!=val_a and inc_b!=val_b):
-        sincronizzato = False
-    elif (inc_b!=val_b and val_a==inc_b):
-        sincronizzato = False
+        sincronizzato = True
 
+        if (dict_nodi[in_a]!=w1 and w2==w1):
+            sincronizzato = False
+        elif (dict_nodi[in_a]!=w1 and dict_nodi[in_b]!=w2):
+            sincronizzato = False
+        elif (dict_nodi[in_b]!=w2 and w1==w2):
+            sincronizzato = False
+        
 
+        if (sincronizzato==True):
+            for nodes in dict_nodi:
+                if (nodes != in_a) or (nodes != in_b):
+                    temp = dict_nodi[nodes]
+                    if (temp == in_a) or (temp == in_b):
+                        sincronizzato = False
+            if (sincronizzato == True):
+                dict_nodi[in_a] = w1
+            
+            
+        return sincronizzato  
+    return verifica_vincoli
     
-    
-    return sincronizzato
-'''
-def sincro(a,b):
-    sincronizzato = False
-    if a==a or b==b: 
-        if a==a and b!=b: 
-            sincronizzato = True
-        if a!=a and b==b: 
-            sincronizzato = True
-    return sincronizzato 
-'''
+
+
 A = Variable('A', {'A','B'}) 
 B = Variable('B', {'B','A','C'})
 C = Variable('C', {'C','B'})
 
-const_1 = Constraint([A,B,"A","B"],sincro)
-const_2 = Constraint([A,C],sincro)
-const_3 = Constraint([C,A],sincro)
-const_4 = Constraint([C,B],sincro)
-const_5 = Constraint([B,C],sincro)
-const_6 = Constraint([B,A],sincro)
+const_1 = Constraint([A,B],sincro("A","B"))
+const_2 = Constraint([A,C],sincro("A","C"))
+const_3 = Constraint([C,A],sincro("C","A"))
+const_4 = Constraint([C,B],sincro("C","B"))
+const_5 = Constraint([B,C],sincro("B","C"))
+const_6 = Constraint([B,A],sincro("B","A"))
 scsp1 = CSP("scsp1", {A,B,C}, [const_1,const_2,const_3,const_4,const_5,const_6])
 se1 = SLSearcher(scsp1)
 print(se1.search(1000000, 0.1, 0.9))
