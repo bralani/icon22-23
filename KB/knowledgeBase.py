@@ -6,6 +6,8 @@ from pyswip import Prolog
 from KB.path_finding.searchGeneric import AStarsearch
 from KB.path_finding.searchProblem import SearchProblemHiddenGraph
 from KB.markovChain.markov_chain import syncro
+from KB.CSP.CSP import SolveCsp
+
 class KnowledgeBase():
 
     def __init__(self):
@@ -36,6 +38,9 @@ class KnowledgeBase():
         
         for incrocio in incroci_semaforici:
             self.ciclo_semaforico(incrocio)
+
+        self.csp = SolveCsp(self)
+
 
     def init_CSP(self):
         '''
