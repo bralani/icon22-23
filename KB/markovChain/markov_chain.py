@@ -3,24 +3,18 @@ from KB.markovChain.HMM import HMM, simulate, create_eg
 import numpy as np
 import copy
 
-sequence = [{'tempo': 15, 'colore': 'rosso'},
-            {'tempo': 8.5, 'colore': 'verde'},
-            {'tempo': 1.5, 'colore': 'giallo'},
-            {'tempo': 15, 'colore': 'rosso'},
-            {'tempo': 8.5, 'colore': 'verde'},
-            {'tempo': 1.5, 'colore': 'giallo'}]
 seconds = 5
 
 def getprobverde(chain1, chain2, seconddist):
     totale_chain1 = len(chain1.states) * seconds
     totale_chain2 = len(chain2.states) * seconds
 
-    mcm =  math.lcm(totale_chain1, totale_chain1)
+    mcm =  math.lcm(totale_chain1, totale_chain2)
     num_cicli1  = int(mcm / totale_chain1)
     num_cicli2  = int(mcm / totale_chain2)
 
     stateseq1, obseq1 = simulate(chain1, int(num_cicli1 * (totale_chain1 / seconds)))
-    stateseq2, obseq2 = simulate(chain2, int(num_cicli2 * (totale_chain1 / seconds)))
+    stateseq2, obseq2 = simulate(chain2, int(num_cicli2 * (totale_chain2 / seconds)))
 
     # prendo la posizione dei cicli in cui c'è il passaggio da rosso a verde nella catena 1
     arrVerdi = []
@@ -62,24 +56,41 @@ def syncro(seq1, seq2, seconddist):  # usando mcm; #seq1 = sequenza primo incroc
     cycle2 = len(chain2.states) * seconds
     
     if cycle1 == cycle2:
-        i = 0
         itMax = len(chain2.states)
-        soglia = getprobverde(chain1, chain2, seconddist)
-        maxSeq = copy.deepcopy(seq2)
-        sogliaMax = soglia
-        while soglia < 1 and i < itMax:
-            seq2 = shift(seq2)
-            chain2 = create_chain(seq2, seconddist)
-            soglia = getprobverde(chain1, chain2, seconddist)
-            if (sogliaMax < soglia):
-                sogliaMax = soglia
-                maxSeq = copy.deepcopy(seq2)
-            i += 1
+        funzione = shift 
     else:
-        return ""
+        itMax = math.ceil(cycle2 / (seconds * 10)) * seconds
+        funzione = addVerde
+    
+    i = 0
+    soglia = getprobverde(chain1, chain2, seconddist)
+    maxSeq = copy.deepcopy(seq2)
+    sogliaMax = soglia
+    while soglia < 1 and i < itMax:
+        seq2 = funzione(seq2)
+        chain2 = create_chain(seq2, seconddist)
+        soglia = getprobverde(chain1, chain2, seconddist)
+        if (sogliaMax < soglia):
+            sogliaMax = soglia
+            maxSeq = copy.deepcopy(seq2)
+        i += 1
         
     return maxSeq
     #return nuovo ciclo semaforico dell'incrocio 2
+
+def addVerde(seq2):
+    for i in range(len(seq2)):
+        if seq2[i]['colore'] == 'verde':
+            posVerde = i
+            
+        if seq2[i]['colore'] == 'rosso':
+            posRosso = i
+            
+
+    seq2[posVerde]['tempo'] += 1
+    seq2[posRosso]['tempo'] -= 1
+
+    return seq2
 
 def shift(seq2): #seq2 = sequenza secondo incrocio
     i = len(seq2)-1
@@ -124,31 +135,7 @@ def create_chain(sequence, seconddist):
                 trans[state][state1] = 1
             else:
                 trans[state][state1] = 0
-    '''
-    sequence = [{'tempo': 4, 'colore': 'rosso'},
-            {'tempo': 8.5, 'colore': 'verde'},
-            {'tempo': 1.5, 'colore': 'giallo'},
-            {'tempo': 15, 'colore': 'rosso'},
-            {'tempo': 8.5, 'colore': 'verde'},
-            {'tempo': 1.5, 'colore': 'giallo'}]
     
-    pobs = {}
-    for ob in obs:
-        tot = 0
-        pobs[ob] = {st: 0 for st in states}
-        for state in states:
-            time = (int(state.split('ciclo_')[1]) + 1) * seconds
-            for i in range(len(sequence)):
-                tempoSequenza = sequence[i]['tempo']
-                tot += tempoSequenza
-                if time <= tot:
-                    if sequence[i]['colore'] == ob:
-                        pobs[ob][state] = 1
-                    break
-                elif time - tot < seconds:
-                    pobs[ob][state] = (seconds - (time - tot)) / seconds
-                    break
-    '''
     pobs = {}
     pobs['verde'] = {st: 0 for st in states}
     pobs['rosso'] = {st: 0 for st in states}
@@ -172,15 +159,3 @@ def create_chain(sequence, seconddist):
 
     hmm = HMM(states, obs, pobs, trans, indist)
     return hmm
-
-#hmm = create_chain(sequence)
-
-#stateseq, obsseq = simulate(hmm, 10000)
-
-'''
-# pobs gives the observation model:
-#pobs[obs][state] is P(obs=on | state)
-pobs = {'rosso': {'alto': 0.90, 'medio': 0.10, 'basso': 0.00},
-         'verde': {'alto': 0.55, 'medio': 0.40, 'basso': 0.05},
-         'giallo': {'alto': 0.10, 'medio': 0.70, 'basso': 0.20}}
-'''

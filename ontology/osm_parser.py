@@ -91,7 +91,7 @@ def carica_file(locale=0):
         filename = filedialog.askopenfilename()
         tree = ET.parse(filename)
     else:
-        tree = ET.parse('ontology/map/new_york.xml')
+        tree = ET.parse('ontology/map/map.xml')
     
     root = tree.getroot()
     allnodes=root.findall('node')
@@ -317,6 +317,7 @@ def pulisci_stringa(str):
     str = str.replace('"', "_")
     str = str.replace(".", "_")
     str = str.replace("&", "_")
+    str = str.replace("°", "_")
     str = str.lower()
 
     return str
