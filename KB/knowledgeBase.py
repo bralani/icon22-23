@@ -36,8 +36,6 @@ class KnowledgeBase():
         
         for incrocio in incroci_semaforici:
             self.ciclo_semaforico(incrocio)
-        
-        syncro(self.get_ciclo_semaforico('nodo_122702192', 'west_3rd_street'), self.get_ciclo_semaforico('nodo_21306066', 'wilshire_boulevard'), 34)
 
     def init_CSP(self):
         '''
@@ -74,6 +72,30 @@ class KnowledgeBase():
                         coppie_incroci.append((incrocio, vicino))
 
         return incroci, coppie_incroci
+
+    def sincronizza_incroci(self, incrocio_1, incrocio_2):
+        '''
+        Metodo sincronizza_incroci
+        -------------------
+        Dati di input
+        --------------
+        incrocio_1: primo incrocio da sincronizzare
+        incrocio_2: secondo incrocio da sincronizzare
+        '''
+
+        strade_comuni = self.incrocio_strade_comuni(incrocio_1, incrocio_2)
+
+        if len(strade_comuni) == 0:
+            return
+
+        strada = strade_comuni[0]
+
+        ciclo_1 = self.get_ciclo_semaforico(incrocio_1, strada)
+        ciclo_2 = self.get_ciclo_semaforico(incrocio_2, strada)
+
+        distanza_incroci = self.distanza_nodi_secondi(incrocio_1, incrocio_2, 0, False)
+
+        new_ciclo2 = syncro(ciclo_1, ciclo_2, distanza_incroci)
 
     def ricerca_percorso(self, X, Y):
         '''
@@ -162,9 +184,7 @@ class KnowledgeBase():
             
         i = 0
         for strada in strade:
-            tempo_rosso = sum(array_verde) + (tempo_giallo * (len(strade) - 1)) - array_verde[i]
-
-            self.assegna_ciclo_semaforico(incrocio,str(strada),str(i),str(array_verde[i]),str(tempo_giallo),str(tempo_rosso))
+            self.assegna_ciclo_semaforico(incrocio,str(strada),str(i),str(array_verde[i]),str(tempo_giallo))
             i = i+1
 
             
@@ -245,36 +265,11 @@ class KnowledgeBase():
         c = 2 * atan2(sqrt(a), sqrt(1 - a))
         distanza = radius * c * 1000
 
-
-        common_list = []
-        strade_X = []
-        query_incrocio = "prop("+X+", strade, Strada)"
-        for atom in self.prolog.query(query_incrocio):
-            strade_X = atom["Strada"]
-
-        for strade in strade_X:
-            common_list.append(strade.value)
-
-        strade_Y = []
-        query_incrocio = "prop("+Y+", strade, Strada)"
-        for atom in self.prolog.query(query_incrocio):
-            strade_Y = atom["Strada"]
-
-        for strade in strade_Y:
-            common_list.append(strade.value)
-
-        newlist = []
-        duplist = []
-
-        for i in common_list:
-            if i not in newlist:
-                newlist.append(i)
-            else:
-                duplist.append(i)
+        common_strade = self.incrocio_strade_comuni(X, Y)
 
         strada = ""
-        if len(duplist) > 0:
-            strada = duplist[0]
+        if len(common_strade) > 0:
+            strada = common_strade[0]
 
             query_incrocio = "prop("+strada+",velocita_massima,V)"
             velocita = list(self.prolog.query(query_incrocio))[0]["V"]
@@ -291,6 +286,48 @@ class KnowledgeBase():
             secondi += secondi_rosso
 
         return secondi
+
+    def incrocio_strade_comuni(self, incrocio1, incrocio2):
+        '''
+        Metodo incrocio_strade_comuni
+        -------------------
+        Dati di input
+        --------------
+        incrocio1: primo incrocio di cui si vogliono conoscere le strade comuni
+        incrocio2: secondo incrocio di cui si vogliono conoscere le strade comuni
+
+        Dati di output
+        -------------- 
+        strade_comuni: lista contenente le strade comuni tra i due incroci
+        '''
+
+        common_list = []
+        strade_X = []
+        query_incrocio = "prop("+incrocio1+", strade, Strada)"
+        for atom in self.prolog.query(query_incrocio):
+            strade_X = atom["Strada"]
+
+        for strade in strade_X:
+            common_list.append(strade.value)
+
+        strade_Y = []
+        query_incrocio = "prop("+incrocio2+", strade, Strada)"
+        for atom in self.prolog.query(query_incrocio):
+            strade_Y = atom["Strada"]
+
+        for strade in strade_Y:
+            common_list.append(strade.value)
+
+        newlist = []
+        strade_comuni = []
+
+        for i in common_list:
+            if i not in newlist:
+                newlist.append(i)
+            else:
+                strade_comuni.append(i)
+        
+        return strade_comuni
 
     def get_secondi_rosso(self, incrocio, strada, seconds_from_start):
         '''
@@ -353,7 +390,6 @@ class KnowledgeBase():
         sequenza = 0
         timer_verde = 0
         timer_giallo = 0
-        timer_rosso = 0
         trovato = False
 
         max = 0
@@ -376,8 +412,6 @@ class KnowledgeBase():
                 timer_verde = atom["Value"]
             elif(atom["Verb"] == "timer_giallo"):
                 timer_giallo = atom["Value"]
-            elif(atom["Verb"] == "timer_rosso"):
-                timer_rosso = atom["Value"]
 
         if(trovato):
 
@@ -400,7 +434,7 @@ class KnowledgeBase():
 
         return ciclo
 
-    def assegna_ciclo_semaforico(self, incrocio, strada, numero_sequenza, timer_verde, timer_giallo, timer_rosso):
+    def assegna_ciclo_semaforico(self, incrocio, strada, numero_sequenza, timer_verde, timer_giallo):
         '''
         Metodo assegna_ciclo_semaforico
         -------------------
@@ -411,14 +445,12 @@ class KnowledgeBase():
         numero_sequenza: numero di sequenza del semaforo nel ciclo
         timer_verde: durata del timer verde
         timer_giallo: durata del timer giallo
-        timer_rosso: durata del timer rosso
         '''
 
         self.prolog.assertz("props(semaforo_"+incrocio+"_"+strada+", sequenza, " + numero_sequenza + ")")
         self.prolog.assertz("props(semaforo_"+incrocio+"_"+strada+", incrocio, " + incrocio + ")")
         self.prolog.assertz("props(semaforo_"+incrocio+"_"+strada+", timer_verde, " + timer_verde + ")")
         self.prolog.assertz("props(semaforo_"+incrocio+"_"+strada+", timer_giallo, " + timer_giallo + ")")
-        self.prolog.assertz("props(semaforo_"+incrocio+"_"+strada+", timer_rosso, " + timer_rosso + ")")
 
     def lista_strade(self):
         '''
