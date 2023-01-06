@@ -106,9 +106,9 @@ class DF_branch_and_bound_opt(Displayable):
                     self.cbsearch({var:val}|asst, newcost, rem_cons)
 
 dict_nodi = {
-    "A": "",
-    "B": "",
-    "C": "" 
+    "A": "A",
+    "B": "B",
+    "C": "C" 
 }
 
 #Non va bene la lista abbiamo bisogno di variabili 
@@ -130,12 +130,20 @@ def sincro(inc_a,inc_b):
 
         if (sincronizzato==True):
             for nodes in dict_nodi:
-                if (nodes != in_a) or (nodes != in_b):
+                if (nodes != in_a):
                     temp = dict_nodi[nodes]
-                    if (temp == in_a) or (temp == in_b):
+                    if (temp == in_a):
                         sincronizzato = False
+                        break
+            for nodes in dict_nodi:
+                if (nodes != in_b):
+                    temp = dict_nodi[nodes]
+                    if (temp == in_b):
+                        sincronizzato = False
+                        break
             if (sincronizzato == True):
-                dict_nodi[in_a] = w1
+                dict_nodi[in_a] = w2
+    
             
             
         return sincronizzato  
