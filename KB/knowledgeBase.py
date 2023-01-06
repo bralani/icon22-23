@@ -48,9 +48,9 @@ class KnowledgeBase():
         incroci: lista contenente gli incroci
         coppie_incroci: lista contenente le coppie di incroci da minimizzare
         '''
+        incrocio_vicini = []
 
         incroci = []
-        coppie_incroci = []
         query = "prop(Incrocio, type, incrocio)"
         for atom in self.prolog.query(query):
             incroci.append(atom["Incrocio"])
@@ -63,15 +63,19 @@ class KnowledgeBase():
 
             if semafori == 1:
                 vicini = self.vicini_incrocio(incrocio)
-                semafori = 0
+
                 for vicino in vicini:
-                    query = "prop("+vicino+", semafori, Semafori)"
+                    semafori = 0
+                    query = "prop("+incrocio+", semafori, Semafori)"
                     for atom in self.prolog.query(query):
                         semafori = atom["Semafori"]
-                    if semafori == 1:
-                        coppie_incroci.append((incrocio, vicino))
 
-        return incroci, coppie_incroci
+                    if semafori == 1:
+                        vicini.remove(vicino)
+
+                incrocio_vicini.append((incrocio, vicini))
+
+        return incrocio_vicini
 
     def sincronizza_incroci(self, incrocio_1, incrocio_2):
         '''
