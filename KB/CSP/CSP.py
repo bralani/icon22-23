@@ -24,24 +24,6 @@ class SoftConstraint(Constraint):
         return self.holds(assignment)
 
 
-
-'''
-Incrocio si può sincronizzare solamente se quello di arrivo non è già sincronizzato (se non è master).
-Un incrocio si puo sincronizzare se l'latro incrocio diventera master.
-
-- Una variabile si puà sincronizzare se: 
-    1) Sono vicini 
-    2) Le due variabili hanno i valori ogininali, hanno lo stesso valore di se stesse(es B=B, A=A)
-    3) Se una variabile ha un valore diverso B<-A(B=A), significa che A è stato sincronizzato con B ed è SLAVE
-    4) Si possono sincronnizare due nodi se uno dei due ha valore unguale a se stesso ed il suo valore non appare come assegnazione ad altre variabili 
-
-    A=A B=B C=B 
-        
-'''     
-
-
-
-
 '''
 A=A, B=B, C=C
 A=A, B=A, C=C 
@@ -54,114 +36,74 @@ A->B C->A
 
 '''    
 
-
-
 #c1 = SoftConstraint([A,B],sincro,"c1")
 
+'''
+2. Una variabile non può essere master di un'altra, se quest'ultima variabile è già master
+
+'''
 
 
-### The second soft C
+'''
+Dominio: Ogni variabile ha come dominio tutti i suoi vicini,
+        e ogni assegnazione indica l'incrocio dal quale lui dipende.
 
-from display import Displayable, visualize
-import math
+Vincoli:
+1. Una variabile master si può sincronizzare con un'altra, 
+se quest'ultima variabile non è ne master e ne slave.
 
-class DF_branch_and_bound_opt(Displayable):
-    """returns a branch and bound searcher for a problem.    
-    An optimal assignment with cost less than bound can be found by calling search()
-    """
-    def __init__(self, csp, bound=math.inf):
-        """creates a searcher than can be used with search() to find an optimal path.
-        bound gives the initial bound. By default this is infinite - meaning there
-        is no initial pruning due to depth bound
-        """
-        super().__init__()
-        self.csp = csp
-        self.best_asst = None
-        self.bound = bound
+Esempio:
+A = {A,B,C,D} 
+B = {A,B,C,D}
+C = {A,B,C,D}
+D = {A,B,C,D}
 
-    def optimize(self):
-        """returns an optimal solution to a problem with cost less than bound.
-        returns None if there is no solution with cost less than bound."""
-        self.num_expanded=0
-        self.cbsearch({}, 0, self.csp.constraints)
-        self.display(1,"Number of paths expanded:",self.num_expanded)
-        return self.best_asst, self.bound
+1. CASO:
+A=B, B=C, C=D, D=D
+MASTER = A --- SLAVE = C
+val_master = B
+val_slave = A
 
-    def cbsearch(self, asst, cost, constraints):
-        """finds the optimal solution that extends path and is less the bound"""
-        self.display(2,"cbsearch:",asst,cost,constraints)
-        can_eval = [c for c in constraints if c.can_evaluate(asst)]
-        rem_cons = [c for c in constraints if c not in can_eval]
-        newcost = cost + sum(c.value(asst) for c in can_eval)
-        self.display(2,"Evaluaing:",can_eval,"cost:",newcost)
-        if newcost < self.bound:
-            self.num_expanded += 1
-            if rem_cons==[]:
-                self.best_asst = asst
-                self.bound = newcost
-                self.display(1,"New best assignment:",asst," cost:",newcost)
-            else:
-                var = next(var for var in self.csp.variables if var not in asst)
-                for val in var.domain:
-                    self.cbsearch({var:val}|asst, newcost, rem_cons)
+MASTER = A ---- SLAVE = B
+val_master = A
+val_slave = B
+'''
 
-dict_nodi = {
-    "A": "A",
-    "B": "B",
-    "C": "C" 
-}
-
-#Non va bene la lista abbiamo bisogno di variabili 
 def sincro(inc_a,inc_b):
 
-    def verifica_vincoli(w1,w2):
-        in_a = inc_a
-        in_b = inc_b
-
-        sincronizzato = True
-
-        if (dict_nodi[in_a]!=w1 and w2==w1):
-            sincronizzato = False
-        elif (dict_nodi[in_a]!=w1 and dict_nodi[in_b]!=w2):
-            sincronizzato = False
-        elif (dict_nodi[in_b]!=w2 and w1==w2):
-            sincronizzato = False
+    def verifica_vincoli(val_master,val_slave):
+        master = inc_a
         
-
-        if (sincronizzato==True):
-            for nodes in dict_nodi:
-                if (nodes != in_a):
-                    temp = dict_nodi[nodes]
-                    if (temp == in_a):
-                        sincronizzato = False
-                        break
-            for nodes in dict_nodi:
-                if (nodes != in_b):
-                    temp = dict_nodi[nodes]
-                    if (temp == in_b):
-                        sincronizzato = False
-                        break
-            if (sincronizzato == True):
-                dict_nodi[in_a] = w2
-    
-            
-            
-        return sincronizzato  
+        if (val_slave == master and master != val_master):
+            return False
+        else:
+            return True
+        
     return verifica_vincoli
     
 
 
-A = Variable('A', {'A','B'}) 
-B = Variable('B', {'B','A','C'})
-C = Variable('C', {'C','B'})
+A = Variable('A', {'A','B','C','D'}) 
+B = Variable('B', {'A','B','D'})
+C = Variable('C', {'A','C','D'})
+D = Variable('D', {'A','B','C','D'})
 
-const_1 = Constraint([A,B],sincro("A","B"))
-const_2 = Constraint([A,C],sincro("A","C"))
-const_3 = Constraint([C,A],sincro("C","A"))
-const_4 = Constraint([C,B],sincro("C","B"))
-const_5 = Constraint([B,C],sincro("B","C"))
-const_6 = Constraint([B,A],sincro("B","A"))
-scsp1 = CSP("scsp1", {A,B,C}, [const_1,const_2,const_3,const_4,const_5,const_6])
+#gli passiamo tutti gli incroci
+def estrai_contraints():
+    Variables = [A,B,C,D]
+    Constraints = []
+    for v1 in Variables:
+        for v2 in Variables:
+            if (v1 != v2):
+                const = Constraint([v1,v2],sincro(v1.name,v2.name))
+                Constraints.append(const)
+
+    return Constraints
+
+contraints = estrai_contraints()
+
+
+scsp1 = CSP("scsp1", {A,B,C,D}, contraints)
 se1 = SLSearcher(scsp1)
 print(se1.search(1000000, 0.1, 0.9))
 
