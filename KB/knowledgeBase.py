@@ -37,7 +37,7 @@ class KnowledgeBase():
         for incrocio in incroci_semaforici:
             self.ciclo_semaforico(incrocio)
         
-        syncro(self.get_ciclo_semaforico('nodo_21300247', 'wilshire_boulevard'), self.get_ciclo_semaforico('nodo_21306066', 'wilshire_boulevard'))
+        syncro(self.get_ciclo_semaforico('nodo_122702192', 'west_3rd_street'), self.get_ciclo_semaforico('nodo_21306066', 'wilshire_boulevard'), 34)
 
     def init_CSP(self):
         '''

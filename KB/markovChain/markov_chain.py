@@ -1,3 +1,4 @@
+import math
 from KB.markovChain.HMM import HMM, simulate, create_eg
 import numpy as np
 import copy
@@ -11,7 +12,44 @@ sequence = [{'tempo': 15, 'colore': 'rosso'},
 seconds = 5
 
 def getprobverde(chain1, chain2, seconddist):
-    return 1
+    totale_chain1 = len(chain1.states) * seconds
+    totale_chain2 = len(chain2.states) * seconds
+
+    mcm =  math.lcm(totale_chain1, totale_chain1)
+    num_cicli1  = int(mcm / totale_chain1)
+    num_cicli2  = int(mcm / totale_chain2)
+
+    stateseq1, obseq1 = simulate(chain1, int(num_cicli1 * (totale_chain1 / seconds)))
+    stateseq2, obseq2 = simulate(chain2, int(num_cicli2 * (totale_chain1 / seconds)))
+
+    # prendo la posizione dei cicli in c'è il passaggio da rosso a verde nella catena 1
+    arrVerdi = []
+    for i in range(len(obseq1)):
+        if obseq1[i]['rosso'] == 1 and obseq1[(i+1) % len(obseq1)]['verde'] == 1:
+            arrVerdi.append((i+1) % len(obseq1))
+
+    # calcolo la differenza che ci sono tra i due cicli
+    seconddist = seconddist % totale_chain2
+    diff_cicli = int(seconddist / seconds)
+
+    # aggiungo la differenza all'arrayVerdi
+    for i in range(len(arrVerdi)):
+        arrVerdi[i] = (i + diff_cicli) % len(obseq2)
+
+    # calcolo quanti verdi ci sono in ogni ciclo della catena 2 in corrispondenza del ciclo 1
+    count = 0
+    for item in arrVerdi:
+        if (obseq2[(item-1)%len(obseq2)]["verde"] == 1):
+            count += 1
+        if (obseq2[item]["verde"] == 1):
+            count += 1
+        if (obseq2[(item+1)%len(obseq2)]["verde"] == 1):
+            count += 1
+
+    if count == 0:
+        return 0
+    else:
+        return count / (len(arrVerdi) * 3)
 
 def syncro(seq1, seq2, seconddist):  # usando mcm; #seq1 = sequenza primo incrocio; #seq2 = sequenza secondo incrocio
     '''
@@ -19,8 +57,8 @@ def syncro(seq1, seq2, seconddist):  # usando mcm; #seq1 = sequenza primo incroc
     seq2 = sequenza secondo incrocio
     seconddist = secondi di distanza tra seq1 e seq2
     '''
-    chain1 = create_chain(seq1)
-    chain2 = create_chain(seq2)
+    chain1 = create_chain(seq1, seconddist)
+    chain2 = create_chain(seq2, seconddist)
     
     cycle1 = 0
     for value in seq1:
@@ -37,7 +75,7 @@ def syncro(seq1, seq2, seconddist):  # usando mcm; #seq1 = sequenza primo incroc
         maxChain2 = chain2
         while soglia != 1 and i < itMax:
             seq2 = shift(seq2)
-            chain2 = create_chain(seq2)
+            chain2 = create_chain(seq2, seconddist)
             soglia = getprobverde(chain1, chain2, seconddist)
             if (getprobverde(chain1, maxChain2, seconddist) < soglia):
                 maxChain2 = chain2
@@ -66,10 +104,10 @@ def shift(seq2): #seq2 = sequenza secondo incrocio
 
     pos = len(seq2)-(i+1)
 
-    return np.roll(seq2, pos)
+    return np.roll(seq2, pos).tolist()
     #return nuova sequenza shiftata se hanno lunghezza ciclo uguale
 
-def create_chain(sequence):
+def create_chain(sequence, seconddist):
     cycle = 0
     for value in sequence:
         cycle += value['tempo']
@@ -114,8 +152,10 @@ def create_chain(sequence):
             tot += sequence[i]['tempo']
             i += 1
 
-    indist = {'verde': 0, 'giallo': 0, 'rosso': 0}
-    indist[sequence[0]['colore']] = 1
+    seconddist = seconddist % cycle
+    idx_start = (math.floor(seconddist / seconds))
+    indist = {st:0 for st in states}
+    indist["ciclo_"+str(idx_start)] = 1
 
     hmm = HMM(states, obs, pobs, trans, indist)
     return hmm
