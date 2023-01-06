@@ -34,7 +34,7 @@ def getprobverde(chain1, chain2, seconddist):
 
     # aggiungo la differenza all'arrayVerdi
     for i in range(len(arrVerdi)):
-        arrVerdi[i] = (i + diff_cicli) % len(obseq2)
+        arrVerdi[i] = (arrVerdi[i] + diff_cicli) % len(obseq2)
 
     # calcolo quanti verdi ci sono in ogni ciclo della catena 2 in corrispondenza del ciclo 1
     count = 0
@@ -65,7 +65,7 @@ def syncro(seq1, seq2, seconddist):  # usando mcm; #seq1 = sequenza primo incroc
         i = 0
         itMax = len(chain2.states)
         soglia = getprobverde(chain1, chain2, seconddist)
-        maxSeq = seq2
+        maxSeq = copy.deepcopy(seq2)
         sogliaMax = soglia
         while soglia < 1 and i < itMax:
             seq2 = shift(seq2)
@@ -73,11 +73,10 @@ def syncro(seq1, seq2, seconddist):  # usando mcm; #seq1 = sequenza primo incroc
             soglia = getprobverde(chain1, chain2, seconddist)
             if (sogliaMax < soglia):
                 sogliaMax = soglia
-                maxSeq = seq2
+                maxSeq = copy.deepcopy(seq2)
             i += 1
     else:
-        #mcm
-        print()
+        return ""
         
     return maxSeq
     #return nuovo ciclo semaforico dell'incrocio 2
@@ -125,32 +124,51 @@ def create_chain(sequence, seconddist):
                 trans[state][state1] = 1
             else:
                 trans[state][state1] = 0
+    '''
+    sequence = [{'tempo': 4, 'colore': 'rosso'},
+            {'tempo': 8.5, 'colore': 'verde'},
+            {'tempo': 1.5, 'colore': 'giallo'},
+            {'tempo': 15, 'colore': 'rosso'},
+            {'tempo': 8.5, 'colore': 'verde'},
+            {'tempo': 1.5, 'colore': 'giallo'}]
     
     pobs = {}
-    
-    for state in states:
-        i = 0
-        time = (int(state.split('ciclo_')[1]) + 1) * seconds
+    for ob in obs:
         tot = 0
-        pobs[state] = {}
-        for i in range(len(sequence)):
-            if time <= sequence[i]['tempo'] + tot:
-                pobs[state][sequence[i]['colore']] = 1
-                pobs[state][sequence[(i+1)%len(sequence)]['colore']] = 0
-                pobs[state][sequence[(i+2)%len(sequence)]['colore']] = 0
-                break
+        pobs[ob] = {st: 0 for st in states}
+        for state in states:
+            time = (int(state.split('ciclo_')[1]) + 1) * seconds
+            for i in range(len(sequence)):
+                tempoSequenza = sequence[i]['tempo']
+                tot += tempoSequenza
+                if time <= tot:
+                    if sequence[i]['colore'] == ob:
+                        pobs[ob][state] = 1
+                    break
+                elif time - tot < seconds:
+                    pobs[ob][state] = (seconds - (time - tot)) / seconds
+                    break
+    '''
+    pobs = {}
+    pobs['verde'] = {st: 0 for st in states}
+    pobs['rosso'] = {st: 0 for st in states}
+    pobs['giallo'] = {st: 0 for st in states}
+    tot = 0
+    for i in range(len(sequence)):
+        for state in states:
+            time = (int(state.split('ciclo_')[1]) + 1) * seconds
+            if time <= sequence[i]['tempo'] + tot and time > tot:
+                if pobs[sequence[i]['colore']][state] == 0:
+                    pobs[sequence[i]['colore']][state] = 1
             elif time - (sequence[i]['tempo'] + tot) < seconds:
-                pobs[state][sequence[i]['colore']] = (seconds - (time - (sequence[i]['tempo'] + tot))) / seconds
-                pobs[state][sequence[(i+1)%len(sequence)]['colore']] = (time - (sequence[i]['tempo'] + tot)) / seconds
-                pobs[state][sequence[(i+2)%len(sequence)]['colore']] = 0
-                break
-            tot += sequence[i]['tempo']
-            i += 1
+                if time > tot:
+                    pobs[sequence[i]['colore']][state] = (seconds - (time - (sequence[i]['tempo'] + tot))) / seconds
+                    pobs[sequence[(i+1) % len(sequence)]['colore']][state] = (time - (sequence[i]['tempo'] + tot)) / seconds
+        tot += sequence[i]['tempo']
+    
 
-    seconddist = seconddist % cycle
-    idx_start = (math.floor(seconddist / seconds))
     indist = {st:0 for st in states}
-    indist["ciclo_"+str(idx_start)] = 1
+    indist["ciclo_0"] = 1
 
     hmm = HMM(states, obs, pobs, trans, indist)
     return hmm
@@ -162,7 +180,7 @@ def create_chain(sequence, seconddist):
 '''
 # pobs gives the observation model:
 #pobs[obs][state] is P(obs=on | state)
-pobs = {'alto': {'rosso': 0.90, 'verde': 0.10, 'giallo': 0.00},
-         'medio': {'rosso': 0.55, 'verde': 0.40, 'giallo': 0.05},
-         'basso': {'rosso': 0.10, 'verde': 0.70, 'giallo': 0.20}}
+pobs = {'rosso': {'alto': 0.90, 'medio': 0.10, 'basso': 0.00},
+         'verde': {'alto': 0.55, 'medio': 0.40, 'basso': 0.05},
+         'giallo': {'alto': 0.10, 'medio': 0.70, 'basso': 0.20}}
 '''
