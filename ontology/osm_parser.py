@@ -91,7 +91,7 @@ def carica_file(locale=0):
         filename = filedialog.askopenfilename()
         tree = ET.parse(filename)
     else:
-        tree = ET.parse('ontology/map/map.xml')
+        tree = ET.parse('ontology/map/new_york.xml')
     
     root = tree.getroot()
     allnodes=root.findall('node')

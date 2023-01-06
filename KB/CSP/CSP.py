@@ -32,6 +32,7 @@ class SolveCsp:
 
         self.prolog = prolog
         self.incroci = self.prolog.init_CSP()
+        self.solveCSP()
 
     #[(incrocio,[vicini])]
 
@@ -39,13 +40,16 @@ class SolveCsp:
         variables = []
         
         for incrocio in self.incroci:
+            if  incrocio[0] not in  incrocio[1]:
+                dominio = incrocio[1]
+                dominio.append(incrocio[0])
             variables.append(Variable(incrocio[0],set(incrocio[1])))
         
         return variables
 
     def sincro(self,inc_a,inc_b):
 
-        def verifica_vincoli(self,val_master,val_slave):
+        def verifica_vincoli(val_master,val_slave):
             master = inc_a
             
             if (val_slave == master and master != val_master):
@@ -57,27 +61,26 @@ class SolveCsp:
         
     
     #gli passiamo tutti gli incroci
-    def estrai_contraints(self):
+    def estrai_dati_csp(self):
         vv = self.estrai_variables()
         Variables = []
         for variable in vv:
             Variables.append(variable.name)
             
         Constraints = []
-        for v1 in Variables:
-            for v2 in Variables:
+        for v1 in vv:
+            for v2 in vv:
                 if (v1 != v2):
                     const = Constraint([v1,v2],self.sincro(v1.name,v2.name))
                     Constraints.append(const)
 
-        return Constraints
-
-    
+        return  [vv,Constraints]
 
     def solveCSP(self):
-        contraints = self.estrai_contraints()
-        variables = self.estrai_variables()
-        scsp1 = CSP("scsp1", set(variables), contraints)
+        dati=self.estrai_dati_csp()
+        contraints = dati[1]
+        variables = dati[0]
+        scsp1 = CSP("scsp1",variables, contraints)
         se1 = SLSearcher(scsp1)
         print(se1.search(1000000, 0.1, 0.9))
 
