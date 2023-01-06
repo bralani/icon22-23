@@ -55,7 +55,7 @@ def simulate(hmm,horizon):
     stateseq=[]
     for time in range(horizon):
         stateseq.append(state)
-        newobs = {obs:sample_one({0:1-hmm.pobs[state][obs],1:hmm.pobs[state][obs]})
+        newobs = {obs:sample_one({0:1-hmm.pobs[obs][state],1:hmm.pobs[obs][state]})
                   for obs in hmm.obsvars}
         obsseq.append(newobs)
         state = sample_one(hmm.trans[state])
