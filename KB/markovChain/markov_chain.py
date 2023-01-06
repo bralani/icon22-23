@@ -22,13 +22,13 @@ def getprobverde(chain1, chain2, seconddist):
     stateseq1, obseq1 = simulate(chain1, int(num_cicli1 * (totale_chain1 / seconds)))
     stateseq2, obseq2 = simulate(chain2, int(num_cicli2 * (totale_chain1 / seconds)))
 
-    # prendo la posizione dei cicli in c'è il passaggio da rosso a verde nella catena 1
+    # prendo la posizione dei cicli in cui c'è il passaggio da rosso a verde nella catena 1
     arrVerdi = []
     for i in range(len(obseq1)):
         if obseq1[i]['rosso'] == 1 and obseq1[(i+1) % len(obseq1)]['verde'] == 1:
             arrVerdi.append((i+1) % len(obseq1))
 
-    # calcolo la differenza che ci sono tra i due cicli
+    # calcolo la differenza che ci sono tra le due catene
     seconddist = seconddist % totale_chain2
     diff_cicli = int(seconddist / seconds)
 
@@ -40,16 +40,14 @@ def getprobverde(chain1, chain2, seconddist):
     count = 0
     for item in arrVerdi:
         if (obseq2[(item-1)%len(obseq2)]["verde"] == 1):
-            count += 1
+            count += 0.5
         if (obseq2[item]["verde"] == 1):
             count += 1
         if (obseq2[(item+1)%len(obseq2)]["verde"] == 1):
-            count += 1
+            count += 0.5
 
-    if count == 0:
-        return 0
-    else:
-        return count / (len(arrVerdi) * 3)
+    prob = count / (len(arrVerdi) * (0.5 + 1 + 0.5))
+    return prob
 
 def syncro(seq1, seq2, seconddist):  # usando mcm; #seq1 = sequenza primo incrocio; #seq2 = sequenza secondo incrocio
     '''
@@ -59,32 +57,29 @@ def syncro(seq1, seq2, seconddist):  # usando mcm; #seq1 = sequenza primo incroc
     '''
     chain1 = create_chain(seq1, seconddist)
     chain2 = create_chain(seq2, seconddist)
-    
-    cycle1 = 0
-    for value in seq1:
-        cycle1 += value['tempo']
-    
-    cycle2 = 0
-    for value in seq2:
-        cycle2 += value['tempo']
+
+    cycle1 = len(chain1.states) * seconds
+    cycle2 = len(chain2.states) * seconds
     
     if cycle1 == cycle2:
-        soglia = getprobverde(chain1, chain2, seconddist)
         i = 0
         itMax = len(chain2.states)
-        maxChain2 = chain2
-        while soglia != 1 and i < itMax:
+        soglia = getprobverde(chain1, chain2, seconddist)
+        maxSeq = seq2
+        sogliaMax = soglia
+        while soglia < 1 and i < itMax:
             seq2 = shift(seq2)
             chain2 = create_chain(seq2, seconddist)
             soglia = getprobverde(chain1, chain2, seconddist)
-            if (getprobverde(chain1, maxChain2, seconddist) < soglia):
-                maxChain2 = chain2
+            if (sogliaMax < soglia):
+                sogliaMax = soglia
+                maxSeq = seq2
             i += 1
     else:
         #mcm
         print()
         
-    return maxChain2
+    return maxSeq
     #return nuovo ciclo semaforico dell'incrocio 2
 
 def shift(seq2): #seq2 = sequenza secondo incrocio
