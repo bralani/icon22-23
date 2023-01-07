@@ -42,6 +42,43 @@ class KnowledgeBase():
         self.csp = SolveCsp(self)
 
 
+    def valutazione_ritardo(self, incroci_sincronizzati):
+        '''
+        Metodo valutazione_ritardo
+        -------------------
+        Dati di input
+        --------------
+        incroci_sincronizzati: dizionario contenente come chiave l'incrocio A
+                               e come valore l'incrocio B sincronizzato con A
+                               in modo che A dipende da B (A è slave di B).
+                               Se il valore di A è A stesso significa che non
+                               è sincronizzato con nessun altro incrocio.
+        Dati di output
+        --------------
+        ritardo: ritardo totale
+        '''
+        ritardo = 0
+
+        # aggiorna i cicli semaforici
+        cicli_aggiornati = {}
+        for slave, master in incroci_sincronizzati.items():
+            if master == slave:
+                # prende una strada qualunque di quell'incrocio
+                query = "props(Semaforo, incrocio, " + master + ")"
+                for atom in self.prolog.query(query):
+                    semaforo = atom["Semaforo"]
+                strada = semaforo.split("semaforo_"+master+"_")[1]
+
+                cicli_aggiornati[master] = {}
+                cicli_aggiornati[master][strada] = self.get_ciclo_semaforico(master, strada)
+            else:
+                nuovo_ciclo_slave = self.sincronizza_incroci(master, slave)
+                cicli_aggiornati[slave] = nuovo_ciclo_slave
+
+
+        return ritardo
+
+
     def init_CSP(self):
         '''
         Metodo init_CSP
@@ -90,6 +127,10 @@ class KnowledgeBase():
         --------------
         incrocio_1: primo incrocio da sincronizzare
         incrocio_2: secondo incrocio da sincronizzare
+
+        Dati di output
+        --------------
+        new_ciclo2: nuovo ciclo semaforico del secondo incrocio
         '''
 
         strade_comuni = self.incrocio_strade_comuni(incrocio_1, incrocio_2)
@@ -105,6 +146,8 @@ class KnowledgeBase():
         distanza_incroci = self.distanza_nodi_secondi(incrocio_1, incrocio_2, 0, False)
 
         new_ciclo2 = syncro(ciclo_1, ciclo_2, distanza_incroci)
+
+        return {strada: new_ciclo2}
 
     def ricerca_percorso(self, X, Y):
         '''
