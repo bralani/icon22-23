@@ -105,7 +105,7 @@ def addVerde(seq2, ciclo_2):
     seq2[posVerde]['tempo'] += 1
     seq2[posRosso]['tempo'] -= 1
 
-    for ciclo_strada in ciclo_2:
+    for strada, ciclo_strada in ciclo_2.items():
         for i in range(len(seq2)):
             if seq2[i]['colore'] == 'verde':
                 posVerde = i

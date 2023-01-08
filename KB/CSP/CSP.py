@@ -39,8 +39,10 @@ class SolveCsp:
 
     def estrai_variables(self):
         variables = []
+        self.lista_incroci = []
         
         for incrocio in self.incroci:
+            self.lista_incroci.append(incrocio)
             self.incroci[incrocio].append(incrocio)
             variables.append(Variable(incrocio,set(self.incroci[incrocio])))
         
@@ -62,24 +64,21 @@ class SolveCsp:
         return verifica_vincoli_hard
         
 
-    def softConstraint(self,*args):
+    def softConstraint(self):
 
-        def verifica_vincoli_soft(*args):
+        def verifica_vincoli_soft(*incroci):
+            argomenti = incroci
+            i = 0
+            dizionario_incroci = {}
+            for incrocio in argomenti:
+                inc = self.lista_incroci[i]
+                dizionario_incroci[inc] = incrocio
+                i+=1
+                
+            valutazione = self.prolog.valutazione_ritardo(dizionario_incroci)
 
-            self.incroci 
-            print("OK") 
-            '''
-            Si
-           valutazione_reale = self.prolog.valutazione_ritardo(self.dic_incroci)
-            temp_dict = self.dic_incroci
-            temp_dict[val_slave] = val_master
-            valutazione_temp = self.prolog.valutazione_ritardo(self.dic_incroci)
-            if (valutazione_temp < valutazione_reale):
-                self.dic_incroci[val_slave] = val_master
-                return valutazione_reale - valutazione_temp
-            else:
-                return  0
-                '''
+            return valutazione
+    
         return verifica_vincoli_soft
 
 

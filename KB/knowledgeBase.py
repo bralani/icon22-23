@@ -83,7 +83,7 @@ class KnowledgeBase():
                 strada = ""
                 if len(common_strade) > 0:
                     strada = common_strade[0]
-
+dove sta discord
                     distanza_incroci = self.distanza_nodi_secondi(master, vicino, 0, False)
                     ciclo_vicino = cicli_aggiornati[vicino][strada]
                     ciclo_master = cicli_aggiornati[master][strada]
@@ -126,11 +126,9 @@ class KnowledgeBase():
                     for atom in self.prolog.query(query):
                         semafori = atom["Semafori"]
 
-                    if semafori == 1:
+                    if semafori == 0:
                         vicini.remove(vicino)
-
                 self.incrocio_vicini[incrocio] = vicini
-
         return self.incrocio_vicini
 
     def sincronizza_incroci(self, incrocio_1, incrocio_2):
@@ -166,6 +164,9 @@ class KnowledgeBase():
 
         ciclo_1 = self.get_ciclo_semaforico(incrocio_1, strada_comune)
         ciclo_2 = self.get_ciclo_semaforico(incrocio_2, strada_comune)
+
+        if len(ciclo_1) == 0 or len(ciclo_2) == 0:
+            return
 
         distanza_incroci = self.distanza_nodi_secondi(incrocio_1, incrocio_2, 0, False)
 
