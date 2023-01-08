@@ -43,7 +43,7 @@ prop(south_burlington_avenue,num_corsie,4).
 prop(south_burlington_avenue,velocita_massima,30).
 prop(south_burlington_avenue,nodi,[nodo_122918100,nodo_9416835861,nodo_2488906890,nodo_122918102,nodo_7883573092,nodo_122918104,nodo_6788420072,nodo_122918106,nodo_7027982603,nodo_6817303079,nodo_122918108,nodo_122854956,nodo_122918111,nodo_473862741,nodo_122641728,nodo_122641730,nodo_3583811512,nodo_473857276,nodo_7882749133,nodo_21306066,nodo_7810385559,nodo_473835327,nodo_7810385549,nodo_473835299,nodo_473831984,nodo_1734900566]).
 
-prop(west_maryland_street,type,strada_primaria).
+prop(west_maryland_street,type,strada_terziaria).
 prop(west_maryland_street,nome,west_maryland_street).
 prop(west_maryland_street,num_corsie,4).
 prop(west_maryland_street,velocita_massima,30).
