@@ -83,7 +83,7 @@ class KnowledgeBase():
                 strada = ""
                 if len(common_strade) > 0:
                     strada = common_strade[0]
-dove sta discord
+
                     distanza_incroci = self.distanza_nodi_secondi(master, vicino, 0, False)
                     ciclo_vicino = cicli_aggiornati[vicino][strada]
                     ciclo_master = cicli_aggiornati[master][strada]
