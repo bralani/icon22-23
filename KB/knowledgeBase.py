@@ -5,7 +5,7 @@ import pickle
 from pyswip import Prolog
 from KB.path_finding.searchGeneric import AStarsearch
 from KB.path_finding.searchProblem import SearchProblemHiddenGraph
-from KB.markovChain.markov_chain import syncro
+from KB.markovChain.markov_chain import syncro, getprobverde
 from KB.CSP.CSP import SolveCsp
 
 class KnowledgeBase():
@@ -63,18 +63,32 @@ class KnowledgeBase():
         cicli_aggiornati = {}
         for slave, master in incroci_sincronizzati.items():
             if master == slave:
-                # prende una strada qualunque di quell'incrocio
                 query = "props(Semaforo, incrocio, " + master + ")"
-                for atom in self.prolog.query(query):
+                lista_semafori = list(self.prolog.query(query))
+                for atom in lista_semafori:
                     semaforo = atom["Semaforo"]
-                strada = semaforo.split("semaforo_"+master+"_")[1]
+                    strada = semaforo.split("semaforo_"+master+"_")[1]
 
-                cicli_aggiornati[master] = {}
-                cicli_aggiornati[master][strada] = self.get_ciclo_semaforico(master, strada)
+                    cicli_aggiornati[master] = {}
+                    cicli_aggiornati[master][strada] = self.get_ciclo_semaforico(master, strada)
             else:
                 nuovo_ciclo_slave = self.sincronizza_incroci(master, slave)
                 cicli_aggiornati[slave] = nuovo_ciclo_slave
 
+        # calcola il ritardo
+        for master, vicini in self.incrocio_vicini.items():
+            for vicino in vicini:
+                common_strade = self.incrocio_strade_comuni(master, vicino)
+
+                strada = ""
+                if len(common_strade) > 0:
+                    strada = common_strade[0]
+
+                    distanza_incroci = self.distanza_nodi_secondi(master, vicino, 0, False)
+                    ciclo_vicino = cicli_aggiornati[vicino][strada]
+                    ciclo_master = cicli_aggiornati[master][strada]
+                    prob_verde = getprobverde(ciclo_vicino, ciclo_master, distanza_incroci)
+                    ritardo += (1-prob_verde)
 
         return ritardo
 
@@ -90,7 +104,7 @@ class KnowledgeBase():
         incroci: lista contenente gli incroci
         coppie_incroci: lista contenente le coppie di incroci da minimizzare
         '''
-        incrocio_vicini = []
+        self.incrocio_vicini = {}
 
         incroci = []
         query = "prop(Incrocio, type, incrocio)"
@@ -115,9 +129,9 @@ class KnowledgeBase():
                     if semafori == 1:
                         vicini.remove(vicino)
 
-                incrocio_vicini.append((incrocio, vicini))
+                self.incrocio_vicini[incrocio] = vicini
 
-        return incrocio_vicini
+        return self.incrocio_vicini
 
     def sincronizza_incroci(self, incrocio_1, incrocio_2):
         '''
@@ -132,22 +146,33 @@ class KnowledgeBase():
         --------------
         new_ciclo2: nuovo ciclo semaforico del secondo incrocio
         '''
-
+        new_ciclo2 = {}
         strade_comuni = self.incrocio_strade_comuni(incrocio_1, incrocio_2)
 
         if len(strade_comuni) == 0:
             return
 
-        strada = strade_comuni[0]
+        strada_comune = strade_comuni[0]
 
-        ciclo_1 = self.get_ciclo_semaforico(incrocio_1, strada)
-        ciclo_2 = self.get_ciclo_semaforico(incrocio_2, strada)
+        new_ciclo2 = {}
+        query_incrocio = "prop("+incrocio_2+", strade, Strade)"
+        lista_strade = list(self.prolog.query(query_incrocio))
+        for atom in lista_strade:
+            strade = atom["Strade"]
+            get_strade = [strada.value for strada in strade]
+        for strada in get_strade:
+            if strada != strada_comune:
+                new_ciclo2[strada] = self.get_ciclo_semaforico(incrocio_2, strada)
+
+        ciclo_1 = self.get_ciclo_semaforico(incrocio_1, strada_comune)
+        ciclo_2 = self.get_ciclo_semaforico(incrocio_2, strada_comune)
 
         distanza_incroci = self.distanza_nodi_secondi(incrocio_1, incrocio_2, 0, False)
 
-        new_ciclo2 = syncro(ciclo_1, ciclo_2, distanza_incroci)
+        ciclo_sincr, new_ciclo2 = syncro(ciclo_1, ciclo_2, new_ciclo2, distanza_incroci)
+        new_ciclo2[strada_comune] = ciclo_sincr    
 
-        return {strada: new_ciclo2}
+        return new_ciclo2
 
     def ricerca_percorso(self, X, Y):
         '''
