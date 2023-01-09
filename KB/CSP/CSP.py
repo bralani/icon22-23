@@ -33,7 +33,6 @@ class SolveCsp:
         self.prolog = prolog
         self.incroci = self.prolog.init_CSP()
         self.dic_incroci = {}
-        self.solveCSP()
 
     #[(incrocio,[vicini])]
 
@@ -111,6 +110,6 @@ class SolveCsp:
         variables = dati[0]
         scsp1 = CSP("scsp1",variables, contraints)
         se1 = SLSearcher(scsp1)
-        print(se1.search(1000000, 0.1, 0.9))
+        return se1.search(1000000, 0.1, 0.9)
 
     

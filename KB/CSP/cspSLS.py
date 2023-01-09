@@ -52,8 +52,7 @@ class SLSearcher(Displayable):
             self.restart()
             self.number_of_steps += 1
             if not self.conflicts:
-                self.display(1,"Solution found:", self.current_assignment, "after restart")
-                return self.number_of_steps
+                return self.current_assignment
         if prob_best > 0:  # we need to maintain a variable priority queue
             return self.search_with_var_pq(max_steps, prob_best, prob_anycon)
         else:
@@ -88,9 +87,7 @@ class SLSearcher(Displayable):
                             self.conflicts.add(varcon)
                 self.display(2,"     Number of conflicts",len(self.conflicts))
             if not self.conflicts:
-                self.display(1,"Solution found:", self.current_assignment,
-                                 "in", self.number_of_steps,"steps")
-                return self.number_of_steps
+                return self.current_assignment
         self.display(1,"No solution in",self.number_of_steps,"steps",
                     len(self.conflicts),"conflicts remain")
         return None
@@ -138,9 +135,7 @@ class SLSearcher(Displayable):
                 self.variable_pq.update_each_priority(var_differential)
                 self.display(2,"Number of conflicts",len(self.conflicts))
             if not self.conflicts:  # no conflicts, so solution found
-                self.display(1,"Solution found:", self.current_assignment,"in",
-                             self.number_of_steps,"steps")
-                return self.number_of_steps
+                return self.current_assignment
         self.display(1,"No solution in",self.number_of_steps,"steps",
                     len(self.conflicts),"conflicts remain")
         return None

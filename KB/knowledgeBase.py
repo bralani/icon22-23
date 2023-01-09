@@ -40,6 +40,10 @@ class KnowledgeBase():
             self.ciclo_semaforico(incrocio)
 
         self.csp = SolveCsp(self)
+        self.assegnazione_ottimale = self.csp.solveCSP()
+        print(self.assegnazione_ottimale)
+        print(self.valutazione_ritardo(self.assegnazione_ottimale))
+
 
 
     def valutazione_ritardo(self, incroci_sincronizzati):
@@ -62,16 +66,21 @@ class KnowledgeBase():
         # aggiorna i cicli semaforici
         cicli_aggiornati = {}
         for slave, master in incroci_sincronizzati.items():
-            if master == slave:
-                query = "props(Semaforo, incrocio, " + master + ")"
-                lista_semafori = list(self.prolog.query(query))
-                for atom in lista_semafori:
-                    semaforo = atom["Semaforo"]
-                    strada = semaforo.split("semaforo_"+master+"_")[1]
+            if(isinstance(slave, str) == False):
+                slave = slave.name
+                
+            cicli_aggiornati[slave] = {}
 
-                    cicli_aggiornati[master] = {}
-                    cicli_aggiornati[master][strada] = self.get_ciclo_semaforico(master, strada)
-            else:
+            # inizializza i semafori di quell'incrocio
+            query_incrocio = "prop("+slave+", strade, Strade)"
+            lista_strade = list(self.prolog.query(query_incrocio))
+            for atom in lista_strade:
+                strade = atom["Strade"]
+                get_strade = [strada.value for strada in strade]
+            for strada in get_strade:
+                cicli_aggiornati[slave][strada] = self.get_ciclo_semaforico(slave, strada)
+
+            if master != slave:
                 nuovo_ciclo_slave = self.sincronizza_incroci(master, slave)
                 cicli_aggiornati[slave] = nuovo_ciclo_slave
 
@@ -120,15 +129,16 @@ class KnowledgeBase():
             if semafori == 1:
                 vicini = self.vicini_incrocio(incrocio)
 
+                lista_vicini = []
                 for vicino in vicini:
                     semafori = 0
-                    query = "prop("+incrocio+", semafori, Semafori)"
+                    query = "prop("+vicino+", semafori, Semafori)"
                     for atom in self.prolog.query(query):
                         semafori = atom["Semafori"]
 
-                    if semafori == 0:
-                        vicini.remove(vicino)
-                self.incrocio_vicini[incrocio] = vicini
+                    if semafori == 1:
+                        lista_vicini.append(vicino)
+                self.incrocio_vicini[incrocio] = lista_vicini
         return self.incrocio_vicini
 
     def sincronizza_incroci(self, incrocio_1, incrocio_2):
