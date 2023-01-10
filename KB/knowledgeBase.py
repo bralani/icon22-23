@@ -20,7 +20,7 @@ class KnowledgeBase():
         ----------------
         Dati di input
         --------------
-        
+
         syncro: booleano che indica se sincronizzare i semafori
         '''
         self.prolog = Prolog()
@@ -50,13 +50,13 @@ class KnowledgeBase():
             self.csp = SolveCsp(self)
             self.assegnazione_ottimale = self.csp.solveCSP()
             print(self.assegnazione_ottimale)
-            print(self.valutazione_ritardo(self.assegnazione_ottimale))
+            print(self.valutazione_efficacia(self.assegnazione_ottimale))
 
 
 
-    def valutazione_ritardo(self, incroci_sincronizzati):
+    def valutazione_efficacia(self, incroci_sincronizzati):
         '''
-        Metodo valutazione_ritardo
+        Metodo valutazione_efficacia
         -------------------
         Dati di input
         --------------
@@ -67,9 +67,9 @@ class KnowledgeBase():
                                è sincronizzato con nessun altro incrocio.
         Dati di output
         --------------
-        ritardo: ritardo totale
+        efficacia: efficacia totale
         '''
-        ritardo = 0
+        efficacia = 0
 
         # aggiorna i cicli semaforici
         cicli_aggiornati = {}
@@ -92,7 +92,8 @@ class KnowledgeBase():
                 nuovo_ciclo_slave = self.sincronizza_incroci(master, slave)
                 cicli_aggiornati[slave] = nuovo_ciclo_slave
 
-        # calcola il ritardo
+        count_strade = 0
+        # calcola l'efficacia
         for master, vicini in self.incrocio_vicini.items():
             for vicino in vicini:
                 common_strade = self.incrocio_strade_comuni(master, vicino)
@@ -105,9 +106,13 @@ class KnowledgeBase():
                     ciclo_vicino = cicli_aggiornati[vicino][strada]
                     ciclo_master = cicli_aggiornati[master][strada]
                     prob_verde = getprobverde(ciclo_vicino, ciclo_master, distanza_incroci)
-                    ritardo += (prob_verde)
+                    efficacia += prob_verde
+                    count_strade += 1
 
-        return ritardo
+        if count_strade > 0:
+            return efficacia / count_strade
+        else:
+            return 0
 
 
     def init_CSP(self):

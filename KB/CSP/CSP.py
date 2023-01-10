@@ -82,7 +82,7 @@ class SolveCsp:
                 dizionario_incroci[inc] = incrocio
                 i+=1
                 
-            valutazione = self.prolog.valutazione_ritardo(dizionario_incroci)
+            valutazione = self.prolog.valutazione_efficacia(dizionario_incroci)
 
             return valutazione
     
