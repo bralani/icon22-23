@@ -1,3 +1,4 @@
+import os
 import xml.etree.cElementTree as ET
 from tkinter import Tk, filedialog
 
@@ -268,11 +269,12 @@ def carica_file(locale=0):
             contents.append( "prop("+nodo_id+",longitudine,"+lon+").\n")
             contents.append("\n")
 
+    if not os.path.exists("KB/prolog/class_value"):
+        os.makedirs("KB/prolog/class_value")
 
     with open("KB/prolog/class_value/strada.pl", "w") as f:
         contents = "".join(contents)
         f.write(contents)
-
 
     #INCROCI
     with open("KB/prolog/class_template/incrocio.pl", "r") as f:

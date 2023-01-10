@@ -7,7 +7,9 @@
 prop(X, type, C) :- prop(S, subClassOf, C), prop(X, type, S).
 
 
-% Clausole di supporto
+
+
+% Clausole di supporto (librerie)
 
 suddividi_prefisso_suffisso(X, L, Prefix1, Suffix) :-
     select(X, Prefix, Suffix, L),

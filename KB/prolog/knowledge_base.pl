@@ -4,22 +4,18 @@
 
 %%  Regole della base di conoscenza
 
+
 /**
- * Calcola la lunghezza di una strada in base alla distanza tra i nodi che la compongono.
+ * Calcola la distanza tra due nodi X e Y
  *
- * @param X: strada
- * @param L: lunghezza della strada (viene restituito il risultato)
+ * @param X: primo nodo
+ * @param Y: secondo nodo
+ * @param S: distanza tra i due nodi (viene restituito il risultato)
  */
-lunghezza_strada(X, [Y,Z|[]], L) :- prop(X, type, strada), distanza_nodi(Y, Z, L).
-lunghezza_strada(X, [T|[S|C]], L) :- prop(X, type, strada),
-                        distanza_nodi(T, S, TR),
-                        lunghezza_strada(X, [S|C], LN),
-                        L is TR + LN.
-
-
 distanza_nodi(X, Y, S) :- prop(X, latitudine, L1), prop(Y, latitudine, L2), 
                        prop(X, longitudine, G1), prop(Y, longitudine, G2), 
                        S is abs(L1 - L2 + G1 - G2).
+
 
 /**
  * Restituisce gli incroci immediatamente vicini dell'incrocio passato in input.
@@ -42,15 +38,25 @@ vicini_strade_incrocio(Incrocio, [S1|S2], Vicini) :- prop(S1, nodi, N1),
                                                      append(Vicini3, [Vicino1|Vicino2], Vicini).
 
 
+/**
+ * Restituisce la latitudine e longitudine di un nodo passato in input
+ *
+ * @param X: nodo di cui si vogliono conoscere le coordinate
+ * @param L: latitudine 
+ * @param G: latitudine 
+ * 
+ */
+lat_lon(X, Latitudine, Longitudine) :- prop(X, latitudine, Latitudine), 
+                                       prop(X, longitudine, Longitudine).
 
 
-lat_lon(X, L, G) :- prop(X, latitudine, L), prop(X, longitudine, G).
-
-tempi_verdi_gialli(Incrocio, 0, Tempo) :- props(Semaforo, sequenza, 0),
-                                          props(Semaforo, incrocio, Incrocio),
-                                          props(Semaforo, timer_verde, Verde),
-                                          props(Semaforo, timer_giallo, Giallo),
-                                          Tempo is Verde + Giallo.
+/**
+ * Calcola i tempi di verdi e giallo fino alla sequenza passata in input
+ * 
+ * @param Incrocio: incrocio di cui si vogliono conoscere i tempi
+ * @param Sequenza: sequenza di semafori fino a cui si vogliono conoscere i tempi
+ * @param Tempo: tempo di verdi e gialli (viene restituito il risultato)
+ */
 tempi_verdi_gialli(Incrocio, Sequenza, Tempo) :- Sequenza > 0,
                                                  props(Semaforo, sequenza, Sequenza),
                                                  props(Semaforo, incrocio, Incrocio),
@@ -60,6 +66,19 @@ tempi_verdi_gialli(Incrocio, Sequenza, Tempo) :- Sequenza > 0,
                                                  tempi_verdi_gialli(Incrocio, Sequenza1, Tempo_prec),
                                                  Tempo is Verde + Giallo + Tempo_prec.
 
+tempi_verdi_gialli(Incrocio, 0, Tempo) :- props(Semaforo, sequenza, 0),
+                                          props(Semaforo, incrocio, Incrocio),
+                                          props(Semaforo, timer_verde, Verde),
+                                          props(Semaforo, timer_giallo, Giallo),
+                                          Tempo is Verde + Giallo.
+
+
+/**
+ * Restituisce tutte le sequenze dell'incrocio passato in input
+ * 
+ * @param Incrocio: incrocio di cui si vogliono conoscere le sequenze
+ * @param Sequenza: sequenza di semafori (viene restituito il risultato)
+ */
 all_sequenze(Incrocio, Sequenza) :- props(Semaforo, sequenza, Sequenza),
                                     props(Semaforo, incrocio, Incrocio).
 

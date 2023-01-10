@@ -10,11 +10,18 @@ from KB.CSP.CSP import SolveCsp
 
 class KnowledgeBase():
 
-    def __init__(self):
+    def __init__(self, syncro):
         '''
         Metodo init
-        ----------------
+        ---------------
+
         Inizializza il motore di prolog e gli algoritmi di machine learning
+
+        ----------------
+        Dati di input
+        --------------
+        
+        syncro: booleano che indica se sincronizzare i semafori
         '''
         self.prolog = Prolog()
         self.prolog.consult("KB/prolog/knowledge_base.pl",catcherrors=False)
@@ -39,10 +46,11 @@ class KnowledgeBase():
         for incrocio in incroci_semaforici:
             self.ciclo_semaforico(incrocio)
 
-        self.csp = SolveCsp(self)
-        self.assegnazione_ottimale = self.csp.solveCSP()
-        print(self.assegnazione_ottimale)
-        print(self.valutazione_ritardo(self.assegnazione_ottimale))
+        if syncro:
+            self.csp = SolveCsp(self)
+            self.assegnazione_ottimale = self.csp.solveCSP()
+            print(self.assegnazione_ottimale)
+            print(self.valutazione_ritardo(self.assegnazione_ottimale))
 
 
 
