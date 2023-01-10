@@ -3,8 +3,7 @@ import random
 import time
 import pickle
 from pyswip import Prolog
-from KB.path_finding.searchGeneric import AStarsearch
-from KB.path_finding.searchProblem import SearchProblemHiddenGraph
+from KB.path_finding.A_star import SearchProblemHiddenGraph
 from KB.markovChain.markov_chain import syncro, getprobverde
 from KB.CSP.CSP import SolveCsp
 
@@ -225,7 +224,7 @@ class KnowledgeBase():
         if list(self.prolog.query(query)) == 0:
             return percorso
 
-        percorso, secondi = AStarsearch(self.search_problem)
+        percorso, secondi = self.search_problem.AStarsearch()
         percorso.reverse()
 
         return percorso, secondi
