@@ -26,10 +26,10 @@ class KnowledgeBase():
         self.prolog = Prolog()
         self.prolog.consult("KB/prolog/knowledge_base.pl",catcherrors=False)
 
-        with open('supervised_learning/models/tree_regression.sav', 'rb') as pickle_file:
-            self.tree_regression = pickle.load(pickle_file)
+        with open('supervised_learning/models/knn.sav', 'rb') as pickle_file:
+            self.knn = pickle.load(pickle_file)
 
-        with open('supervised_learning/models/scaler_tree.sav', 'rb') as pickle_file:
+        with open('supervised_learning/models/scaler_knn.sav', 'rb') as pickle_file:
             self.scaler = pickle.load(pickle_file)
 
         self.dic = { 
@@ -242,7 +242,7 @@ class KnowledgeBase():
         X = [[data[2], data[1], data[3], data[6] > 4, type_strada]]
         X = self.scaler.transform(X)
 
-        return self.tree_regression.predict(X)[0]
+        return self.knn.predict(X)[0]
 
     
     def ciclo_semaforico(self,incrocio):
