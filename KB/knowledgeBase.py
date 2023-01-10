@@ -97,7 +97,7 @@ class KnowledgeBase():
                     ciclo_vicino = cicli_aggiornati[vicino][strada]
                     ciclo_master = cicli_aggiornati[master][strada]
                     prob_verde = getprobverde(ciclo_vicino, ciclo_master, distanza_incroci)
-                    ritardo += (1-prob_verde)
+                    ritardo += (prob_verde)
 
         return ritardo
 
