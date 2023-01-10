@@ -52,8 +52,8 @@ while True:
         else:
             print("Nessun incrocio è stato trovato!")
     elif scelta == "3":
-        nodo1 = input("Inserisci il nodo di partenza nella mappa caricata (es. nodo_12345): ")
-        nodo2 = input("Inserisci il nodo di arrivo nella mappa caricata (es. nodo_12345): ") 
+        nodo1 = input("Inserisci il nodo di partenza nella mappa caricata (es. nodo_21300247): ")
+        nodo2 = input("Inserisci il nodo di arrivo nella mappa caricata (es. nodo_122639927): ") 
         percorso, secondi = kb.ricerca_percorso(nodo1, nodo2)
         if len(percorso)>0:
             print("\nPercorso trovato: ")
