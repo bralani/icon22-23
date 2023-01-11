@@ -19,7 +19,7 @@ def k_fold_cross_validation(model, X, y):
       mse: errore quadratico medio
       max_error: errore massimo
   '''
-  cv2 = ShuffleSplit(n_splits=10, random_state=0)
+  cv2 = ShuffleSplit(n_splits=12, random_state=0)
 
   r2 = mean(cross_val_score(model, X, y, cv=cv2, scoring='r2'))
   abs = -mean(cross_val_score(model, X, y, cv=cv2, scoring='neg_mean_absolute_error'))
