@@ -8,8 +8,8 @@
 # Attribution-NonCommercial-ShareAlike 4.0 International License.
 # See: http://creativecommons.org/licenses/by-nc-sa/4.0/deed.en
 
-from KB.CSP.cspSLS import SLSearcher
-from KB.CSP.cspProblem import Variable, Constraint, CSP
+from KB.CSP.libs.cspSLS import SLSearcher
+from KB.CSP.libs.cspProblem import Variable, Constraint, CSP
 
 
 class SoftConstraint(Constraint):
@@ -34,15 +34,13 @@ class SolveCsp:
         self.incroci = self.prolog.init_CSP()
         self.dic_incroci = {}
         self.dic_incroci_test= {}
+        
         '''
-        VAKUTAZIONE RITARDO 
         for incrocio in self.incroci:
             self.dic_incroci_test[incrocio] = incrocio
-        valutazione = self.prolog.valutazione_ritardo(self.dic_incroci_test)
+        valutazione = self.prolog.valutazione_efficacia(self.dic_incroci_test)
         print(valutazione)
         '''
-
-    #[(incrocio,[vicini])]
 
     def estrai_variables(self):
         variables = []
@@ -118,6 +116,6 @@ class SolveCsp:
         variables = dati[0]
         scsp1 = CSP("scsp1",variables, contraints)
         se1 = SLSearcher(scsp1)
-        return se1.search(1000000, 0, 1)
+        return se1.search(10000000, 0.8)
 
     

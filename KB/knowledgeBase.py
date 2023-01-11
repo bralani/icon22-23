@@ -1,3 +1,4 @@
+import copy
 from math import atan2, cos, radians, sin, sqrt
 import random
 import time
@@ -41,17 +42,37 @@ class KnowledgeBase():
         query_incrocio = "prop(Incrocio, semafori, 1)"
         for atom in self.prolog.query(query_incrocio):
             incroci_semaforici.append(atom["Incrocio"])
-        
+
+        self.dict_strade = {}
         for incrocio in incroci_semaforici:
             self.ciclo_semaforico(incrocio)
 
         if syncro:
-            self.csp = SolveCsp(self)
-            self.assegnazione_ottimale = self.csp.solveCSP()
-            print(self.assegnazione_ottimale)
-            print(self.valutazione_efficacia(self.assegnazione_ottimale))
+            csp = SolveCsp(self)
+            assegnazione_ottimale = csp.solveCSP()
+            print(self.valutazione_efficacia(assegnazione_ottimale))
+            self.modifica_ciclo_semaforico(assegnazione_ottimale)
 
+    def modifica_ciclo_semaforico(self, assegnazione):
+        '''
+        Metodo modifica_ciclo_semaforico
+        -------------------
+        Modifica il ciclo semaforico di un incrocio
 
+        Dati di input
+        --------------
+        assegnazione: dizionario contenente come chiave l'incrocio A
+                      e come valore l'incrocio B sincronizzato con A
+                      in modo che A dipende da B (A è slave di B).
+                      Se il valore di A è A stesso significa che non
+                      è sincronizzato con nessun altro incrocio.
+        '''
+        for slave, master in assegnazione.items():
+            slave = slave.name
+            if slave != master:
+                nuovo_ciclo_slave = self.sincronizza_incroci(master, slave)
+                self.rimuovi_ciclo_semaforico(slave)
+                self.assegna_ciclo_semaforico(slave, nuovo_ciclo_slave)
 
     def valutazione_efficacia(self, incroci_sincronizzati):
         '''
@@ -70,22 +91,12 @@ class KnowledgeBase():
         '''
         efficacia = 0
 
+        cicli_aggiornati = copy.deepcopy(self.dict_strade)
+
         # aggiorna i cicli semaforici
-        cicli_aggiornati = {}
         for slave, master in incroci_sincronizzati.items():
             if(isinstance(slave, str) == False):
                 slave = slave.name
-                
-            cicli_aggiornati[slave] = {}
-
-            # inizializza i semafori di quell'incrocio
-            query_incrocio = "prop("+slave+", strade, Strade)"
-            lista_strade = list(self.prolog.query(query_incrocio))
-            for atom in lista_strade:
-                strade = atom["Strade"]
-                get_strade = [strada.value for strada in strade]
-            for strada in get_strade:
-                cicli_aggiornati[slave][strada] = self.get_ciclo_semaforico(slave, strada)
 
             if master != slave:
                 nuovo_ciclo_slave = self.sincronizza_incroci(master, slave)
@@ -282,10 +293,27 @@ class KnowledgeBase():
             incrocio_random = random.randint(0,len(strade)-1)
             array_verde[incrocio_random] += resto
             
+        dict_strade = {}
         i = 0
         for strada in strade:
-            self.assegna_ciclo_semaforico(incrocio,str(strada),str(i),str(array_verde[i]),str(tempo_giallo))
+            list_strada = []
+
+            # rosso precedente
+            if(i > 0):
+                tempo_rosso = sum(array_verde[:i])
+                list_strada.append({"tempo":tempo_rosso, "colore":"rosso"})
+            
+            list_strada.append({"tempo":array_verde[i], "colore":"verde"})
+            list_strada.append({"tempo":4, "colore":"giallo"})
+            
+            if(i < len(strade)-1):
+                tempo_rosso = sum(array_verde[(i+1):])
+                list_strada.append({"tempo":tempo_rosso, "colore":"rosso"})
+
+            dict_strade[strada.value] = list_strada
             i = i+1
+        self.dict_strade[incrocio] = dict_strade
+        self.assegna_ciclo_semaforico(incrocio,dict_strade)
 
             
     def vicini_incrocio(self, X):
@@ -486,71 +514,66 @@ class KnowledgeBase():
         ciclo: ciclo di quel semaforo all'interno dell'incrocio
         '''
         ciclo = []
-        totale = 0
-        sequenza = 0
-        timer_verde = 0
-        timer_giallo = 0
-        trovato = False
 
-        max = 0
-        # preleva il totale di quel ciclo semaforico
-        query = "all_sequenze("+incrocio+", Seq)"
-        for atom in self.prolog.query(query):
-            if atom["Seq"] > max:
-                max = atom["Seq"]
-        query = "tempi_verdi_gialli("+incrocio+", "+str(max)+", Tempi)"
-        for atom in self.prolog.query(query):
-            totale = atom["Tempi"]
-
-
+        # preleva il ciclo semaforico 
+        ciclo = {}
         query = "props(semaforo_"+incrocio+"_"+strada+", Verb, Value)"
         for atom in self.prolog.query(query):
-            trovato = True
-            if(atom["Verb"] == "sequenza"):
-                sequenza = atom["Value"]
-            elif(atom["Verb"] == "timer_verde"):
-                timer_verde = atom["Value"]
-            elif(atom["Verb"] == "timer_giallo"):
-                timer_giallo = atom["Value"]
 
-        if(trovato):
+            verb = atom["Verb"]
+            value = atom["Value"]
 
-            tempi_prec = 0
+            idx = int(verb.split("_")[1])
+            verb = verb.split("_")[0]
 
-            if sequenza > 0:
-                # preleva i tempi di verde e giallo dei semafori precedenti al numero di sequenza
-                query = "tempi_verdi_gialli("+incrocio+", "+str(sequenza-1)+", Tempi)"
-                for atom in self.prolog.query(query):
-                    tempi_prec = atom["Tempi"]
+            if(verb == "tempo"):
+                value = int(value)
 
-            if(tempi_prec > 0):
-                ciclo.append({'colore': 'rosso', 'tempo': tempi_prec})
+            try:
+                ciclo[idx][verb] = value
+            except:
+                ciclo[idx] = {}
+                ciclo[idx][verb] = value
 
-            ciclo.append({'colore': 'verde', 'tempo': timer_verde})
-            ciclo.append({'colore': 'giallo', 'tempo': timer_giallo})
-
-            if(tempi_prec + timer_verde + timer_giallo < totale):
-                ciclo.append({'colore': 'rosso', 'tempo': totale - (tempi_prec + timer_verde + timer_giallo)})
+        ciclo = [ciclo[i] for i in range(len(ciclo))]
 
         return ciclo
 
-    def assegna_ciclo_semaforico(self, incrocio, strada, numero_sequenza, timer_verde, timer_giallo):
+    def assegna_ciclo_semaforico(self, incrocio, dict_strada):
         '''
         Metodo assegna_ciclo_semaforico
         -------------------
         Dati di input
         --------------
         incrocio: incrocio di cui si vuole assegnare il ciclo semaforico
-        strada: strada dell'incrocio di cui si vuole assegnare il timer
-        numero_sequenza: numero di sequenza del semaforo nel ciclo
-        timer_verde: durata del timer verde
-        timer_giallo: durata del timer giallo
+        dict_strada: ciclo di ogni strada nell'incrocio
         '''
 
-        self.prolog.assertz("props(semaforo_"+incrocio+"_"+strada+", sequenza, " + numero_sequenza + ")")
-        self.prolog.assertz("props(semaforo_"+incrocio+"_"+strada+", incrocio, " + incrocio + ")")
-        self.prolog.assertz("props(semaforo_"+incrocio+"_"+strada+", timer_verde, " + timer_verde + ")")
-        self.prolog.assertz("props(semaforo_"+incrocio+"_"+strada+", timer_giallo, " + timer_giallo + ")")
+        for strada, ciclo in dict_strada.items():
+            i = 0
+            
+            for item in ciclo:
+                self.prolog.assertz("props(semaforo_"+incrocio+"_"+strada+", tempo_"+ str(i) +", " + str(item["tempo"]) + ")")
+                self.prolog.assertz("props(semaforo_"+incrocio+"_"+strada+", colore_"+ str(i) +", " + str(item["colore"]) + ")")
+
+                i += 1
+    
+    def rimuovi_ciclo_semaforico(self, incrocio):
+        '''
+        Metodo assegna_ciclo_semaforico
+        -------------------
+        Dati di input
+        --------------
+        incrocio: incrocio da rimuovere nella base di conoscenza
+        '''
+        strade = []
+        query_incrocio = "prop("+str(incrocio)+", strade, Strada)"
+        for atom in self.prolog.query(query_incrocio):
+            strade = atom["Strada"]
+
+        for strada in strade:
+            individuo = "semaforo_"+incrocio+"_"+strada.value
+            self.prolog.retractall("props("+individuo+", P, V)")
 
     def lista_strade(self):
         '''
@@ -564,7 +587,8 @@ class KnowledgeBase():
 
         query = "prop(X, type, strada)"
         for atom in self.prolog.query(query):
-            strade.append(atom["X"])
+            if(isinstance(atom["X"], str)):
+                strade.append(atom["X"])
 
         return strade
 

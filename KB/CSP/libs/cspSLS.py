@@ -8,8 +8,8 @@
 # Attribution-NonCommercial-ShareAlike 4.0 International License.
 # See: http://creativecommons.org/licenses/by-nc-sa/4.0/deed.en
 
-from KB.CSP.cspProblem import CSP, Constraint
-from KB.CSP.display import Displayable
+from KB.CSP.libs.cspProblem import CSP, Constraint
+from KB.CSP.libs.display import Displayable
 import random
 import heapq
 
