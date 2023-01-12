@@ -3,6 +3,7 @@ from math import atan2, cos, radians, sin, sqrt
 import random
 import time
 import pickle
+import numpy as np
 from pyswip import Prolog
 from KB.path_finding.A_star import SearchProblemHiddenGraph
 from KB.markovChain.markov_chain import syncro, getprobverde
@@ -254,7 +255,12 @@ class KnowledgeBase():
         '''
         data = time.localtime()
         
-        X = [[data[2], data[1], data[3], data[6] > 4, type_strada]]
+        if(data[6] > 4):
+            is_weekend = 1
+        else:
+            is_weekend = 0
+
+        X = np.array([[data[2], data[1], data[3], is_weekend, type_strada]])
         X = self.scaler.transform(X)
 
         return self.knn.predict(X)[0]

@@ -1,5 +1,5 @@
 import math
-from KB.markovChain.HMM import HMM, simulate, create_eg
+from KB.markovChain.libs.HMM import HMM, simulate, create_eg
 import numpy as np
 import copy
 
