@@ -6,7 +6,7 @@ from preprocessing import initialize_ML
 X, y, scaler = initialize_ML()
 
 # Creazione del modello
-model = KNeighborsRegressor(n_neighbors=5)
+model = KNeighborsRegressor(n_neighbors=3)
 model.fit(X, y)
 
 # Salvataggio del modello
