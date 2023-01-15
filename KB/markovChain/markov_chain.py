@@ -44,6 +44,9 @@ def getprobverde(seq1, seq2, seconddist):
         if (obseq2[(item+1)%len(obseq2)]["verde"] == 1):
             count += 0.5
 
+    if len(arrVerdi) == 0:
+        return 0
+        
     prob = count / (len(arrVerdi) * (0.5 + 1 + 0.5))
     return prob
 

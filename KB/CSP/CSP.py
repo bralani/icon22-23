@@ -116,6 +116,6 @@ class SolveCsp:
         variables = dati[0]
         scsp1 = CSP("scsp1",variables, contraints)
         se1 = SLSearcher(scsp1)
-        return se1.search(10000000, 0.8)
+        return se1.search(10000000, 0.8, 0.5)
 
     
