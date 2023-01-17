@@ -158,6 +158,8 @@ def create_chain(sequence, velocita = 0):
     states = set(list)
     obs = {'rosso', 'verde', 'giallo'}
     
+    prob = 1
+
     if velocita > 0:
         mu, sigma = velocita, 3.76
         campione = np.random.normal(mu, sigma, 1)[0]
