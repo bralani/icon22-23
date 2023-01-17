@@ -112,7 +112,7 @@ class KnowledgeBase():
                 if len(common_strade) > 0:
                     strada = common_strade[0]
 
-                    distanza_incroci = self.distanza_nodi_secondi(master, vicino, 0, False)
+                    distanza_incroci, vel = self.distanza_nodi_secondi(master, vicino, 0, False)
                     ciclo_vicino = cicli_aggiornati[vicino][strada]
                     ciclo_master = cicli_aggiornati[master][strada]
                     prob_verde = getprobverde(ciclo_vicino, ciclo_master, distanza_incroci)
@@ -201,9 +201,9 @@ class KnowledgeBase():
         if len(ciclo_1) == 0 or len(ciclo_2) == 0:
             return
 
-        distanza_incroci = self.distanza_nodi_secondi(incrocio_1, incrocio_2, 0, False)
+        distanza_incroci, velocita = self.distanza_nodi_secondi(incrocio_1, incrocio_2, 0, False)
 
-        ciclo_sincr, new_ciclo2 = syncro(ciclo_1, ciclo_2, new_ciclo2, distanza_incroci)
+        ciclo_sincr, new_ciclo2 = syncro(ciclo_1, ciclo_2, new_ciclo2, distanza_incroci, velocita)
         new_ciclo2[strada_comune] = ciclo_sincr    
 
         return new_ciclo2
@@ -370,7 +370,8 @@ class KnowledgeBase():
         -------------- 
         euristica: euristica del nodo passato in input
         '''
-        return self.distanza_nodi_secondi(X, self.nodo_goal, 0, False)
+        dist, vel = self.distanza_nodi_secondi(X, self.nodo_goal, 0, False)
+        return dist
     
     def distanza_nodi_secondi(self, X, Y, seconds_from_start=0, add_seconds_red=True):
         '''
@@ -386,6 +387,7 @@ class KnowledgeBase():
         Dati di output
         -------------- 
         distanza: distanza tra i due nodi in secondi
+        velocita: velocità nell'incrocio X
         '''
         distanza = 0
         velocita = 30
@@ -428,7 +430,7 @@ class KnowledgeBase():
             secondi_rosso = self.get_secondi_rosso(Y, strada, seconds_from_start)
             secondi += secondi_rosso
 
-        return secondi
+        return secondi, velocita
 
     def incrocio_strade_comuni(self, incrocio1, incrocio2):
         '''

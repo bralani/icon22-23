@@ -5,10 +5,10 @@ import copy
 
 seconds = 5
 
-def getprobverde(seq1, seq2, seconddist):
+def getprobverde(seq1, seq2, seconddist, velocita = 0):
     
-    chain1 = create_chain(seq1)
-    chain2 = create_chain(seq2)
+    chain1 = create_chain(seq1, velocita)
+    chain2 = create_chain(seq2, velocita)
 
     totale_chain1 = len(chain1.states) * seconds
     totale_chain2 = len(chain2.states) * seconds
@@ -50,7 +50,7 @@ def getprobverde(seq1, seq2, seconddist):
     prob = count / (len(arrVerdi) * (0.5 + 1 + 0.5))
     return prob
 
-def syncro(seq1, seq2, ciclo_2, seconddist):  # usando mcm; #seq1 = sequenza primo incrocio; #seq2 = sequenza secondo incrocio
+def syncro(seq1, seq2, ciclo_2, seconddist, velocita):  # usando mcm; #seq1 = sequenza primo incrocio; #seq2 = sequenza secondo incrocio
     '''
     seq1 = sequenza primo incrocio
     seq2 = sequenza secondo incrocio
@@ -72,13 +72,13 @@ def syncro(seq1, seq2, ciclo_2, seconddist):  # usando mcm; #seq1 = sequenza pri
         funzione = addVerde
     
     i = 0
-    soglia = getprobverde(seq1, seq2, seconddist)
+    soglia = getprobverde(seq1, seq2, seconddist, velocita)
     maxSeq = copy.deepcopy(seq2)
     copyCiclo2 = copy.deepcopy(ciclo_2)
     sogliaMax = soglia
     while soglia < 1 and i < itMax:
         seq2 = funzione(seq2, ciclo_2)
-        soglia = getprobverde(seq1, seq2, seconddist)
+        soglia = getprobverde(seq1, seq2, seconddist, velocita)
         if (sogliaMax < soglia):
             sogliaMax = soglia
             copyCiclo2 = copy.deepcopy(ciclo_2)
@@ -145,7 +145,7 @@ def shift(seq2, ciclo_2 = []): #seq2 = sequenza secondo incrocio
     return deleteDuplicati(np.roll(seq2, pos).tolist())
     #return nuova sequenza shiftata se hanno lunghezza ciclo uguale
 
-def create_chain(sequence):
+def create_chain(sequence, velocita = 0):
     cycle = 0
     for value in sequence:
         cycle += value['tempo']
@@ -158,6 +158,17 @@ def create_chain(sequence):
     states = set(list)
     obs = {'rosso', 'verde', 'giallo'}
     
+    if velocita > 0:
+        mu, sigma = velocita, 3.76
+        campione = np.random.normal(mu, sigma, 1)[0]
+
+        # rende il campione minore della velocita
+        if campione > velocita:
+            diff = campione - velocita
+            campione -= 2*diff
+
+        prob = campione/velocita
+
     trans = {}
     for state in states:
         i = int(state.split('ciclo_')[1])
@@ -165,7 +176,9 @@ def create_chain(sequence):
         for state1 in states:
             j = int (state1.split('ciclo_')[1])
             if j == (i + 1) % numstati:
-                trans[state][state1] = 1
+                trans[state][state1] = prob
+            elif j == i:
+                trans[state][state1] = 1 - prob
             else:
                 trans[state][state1] = 0
     

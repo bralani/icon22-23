@@ -30,7 +30,8 @@ class SearchProblemHiddenGraph(Search_problem):
         neigh = self.prolog.vicini_incrocio(node)
         arcs = []
         for item in neigh:
-            arcs.append(Arc(node, item, self.prolog.distanza_nodi_secondi(node, item, seconds_from_start, True), None))
+            dist, vel = self.prolog.distanza_nodi_secondi(node, item, seconds_from_start, True)
+            arcs.append(Arc(node, item, dist, None))
         return arcs
 
     def heuristic(self,node):
