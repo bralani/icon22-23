@@ -22,3 +22,19 @@ Installare le dipendenze:
 
 `pip install -r requirements.txt`
 
+# Guida utilizzo
+
+## Caricamento file 
+Il programma una volta avvaiato richiede quali dati utilizzare, il menu è formato dalle seguenti opzioni:
+- File pre caricato, utilizzare il file pre caricato sulla piattaforma (fortemente consigliato)
+- Carica file xml, opzione per caricare un file da locale. Il file deve avere la struttura standard OSM XML per un coretto utilizzo. 
+
+Una volta caricato il file il viene chiesto se si desidera sincronizzare i semafori globalmente per diminuire il tempo di rosso globale tra i semafori della realta di riferimento. 
+
+Il menu viene successivamnete sostituito con le sefuente opzioni
+- Visualizza le strade, restituisece tutte le starde della realta di riferimento.
+- Visualizza gli incroci, restituisce i dati su tutti gli incroci.
+- Ricerca percorso ottimale tra due incroci, prende due incroci uno di partenza e uno di destinazione in input ti restituisce il percorso ottimale da   seguire
+
+
+
