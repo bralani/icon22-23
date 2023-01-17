@@ -264,15 +264,3 @@ class Runtime_distribution(object):
         SLSearcher.max_display_level= temp_mdl  #restore display
 
 
-## Test Solving CSPs with Search:
-#se1 = SLSearcher(csp1); print(se1.search(100))
-#se2 = SLSearcher(csp2); print(se2.search(1000,1.0)) # greedy
-#se2 = SLSearcher(csp2); print(se2.search(1000,0))  # any_conflict
-#se2 = SLSearcher(csp2); print(se2.search(1000,0.7)) # 70% greedy; 30% any_conflict
-#SLSearcher.max_display_level=2  #more detailed display
-#se3 = SLSearcher(crossword1); print(se3.search(100),0.7)
-#p = Runtime_distribution(csp2)
-#p.plot_runs(1000,1000,0)    # any_conflict
-#p.plot_runs(1000,1000,1.0)  # greedy
-#p.plot_runs(1000,1000,0.7)  # 70% greedy; 30% any_conflict
-

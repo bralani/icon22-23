@@ -15,12 +15,3 @@ pickle.dump(model, open(filename, 'wb'))
 
 filename = os.path.join(os.path.dirname(__file__), 'models/scaler_tree.sav')
 pickle.dump(scaler, open(filename, 'wb'))
-
-
-'''
-# profondità dell'albero
-k = model.max_depth
-n = len(X)
-log_likelihood = log(mse)
-print("BIC: " + str(calculate_bic(n, log_likelihood, k)))
-'''

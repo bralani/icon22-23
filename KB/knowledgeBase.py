@@ -51,7 +51,6 @@ class KnowledgeBase():
         if syncro:
             csp = SolveCsp(self)
             assegnazione_ottimale = csp.solveCSP()
-            print(self.valutazione_efficacia(assegnazione_ottimale))
             self.modifica_ciclo_semaforico(assegnazione_ottimale)
 
     def modifica_ciclo_semaforico(self, assegnazione):
@@ -227,14 +226,24 @@ class KnowledgeBase():
         self.nodo_goal = Y
 
         percorso = []
-        
+        trovato = False
+
         query = "prop("+X+", type, incrocio)"
-        if list(self.prolog.query(query)) == 0:
-            return percorso
-            
+        for atom in self.prolog.query(query):
+            trovato = True
+
+        if not trovato:
+            return percorso, 0
+        
+        trovato = False
+
         query = "prop("+Y+", type, incrocio)"
-        if list(self.prolog.query(query)) == 0:
-            return percorso
+        for atom in self.prolog.query(query):
+            trovato = True
+        
+        if not trovato:
+            return percorso, 0
+            
 
         percorso, secondi = self.search_problem.AStarsearch()
         percorso.reverse()

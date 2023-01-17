@@ -35,13 +35,6 @@ class SolveCsp:
         self.dic_incroci = {}
         self.dic_incroci_test= {}
         
-        '''
-        for incrocio in self.incroci:
-            self.dic_incroci_test[incrocio] = incrocio
-        valutazione = self.prolog.valutazione_efficacia(self.dic_incroci_test)
-        print(valutazione)
-        '''
-
     def estrai_variables(self):
         variables = []
         self.lista_incroci = []
@@ -65,7 +58,6 @@ class SolveCsp:
                 self.dic_incroci[slave] = val_slave
                 return True
 
-            
         return verifica_vincoli_hard
         
 
@@ -116,6 +108,6 @@ class SolveCsp:
         variables = dati[0]
         scsp1 = CSP("scsp1",variables, contraints)
         se1 = SLSearcher(scsp1)
-        return se1.search(10000000, 0.8, 0.5)
+        return se1.search(10000000, 1, 0)
 
     
