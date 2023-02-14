@@ -1,4 +1,4 @@
-# Icon 2022-2023
+# Semafori intelligenti
 Repository per il progetto di ingegneria della conoscenza 2022-2023. Realizzato da:
  - Balice Matteo            (mat. 743479)
  - Doronzo Antonio Giuseppe (mat. 736571)
